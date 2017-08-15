@@ -1,0 +1,4 @@
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\obj\Debug\HugeGenerator.csprojResolveAssemblyReference.cache
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\obj\Debug\HugeGenerator.exe
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\obj\Debug\HugeGenerator.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Debug\HugeGenerator.exe.config
