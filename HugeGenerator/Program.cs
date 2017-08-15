@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace HugeGenerator
 {
@@ -25,7 +26,7 @@ namespace HugeGenerator
         private static ConsoleEventDelegate handler;   // Keeps it from getting garbage collected
 
         // Pinvoke
-        private delegate bool ConsoleEventDelegate(int eventType);
+        private delegate bool ConsoleEventDelegate(CtrlType eventType);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool SetConsoleCtrlHandler(ConsoleEventDelegate callback, bool add);
@@ -35,6 +36,15 @@ namespace HugeGenerator
                             FileRepoInfo = "https://gitlab.com/api/v3/projects/{0}/repository/files?ref={1}&file_path={2}",
                             _ModpackName = "HugeCraft";
 
+        private enum CtrlType
+        {
+            CTRL_C_EVENT = 0,
+            CTRL_BREAK_EVENT = 1,
+            CTRL_CLOSE_EVENT = 2,
+            CTRL_LOGOFF_EVENT = 5,
+            CTRL_SHUTDOWN_EVENT = 6
+        }
+
         public const int _RepoID = 3820415;
 
         public static List<TagData> tagData = new List<TagData>();
@@ -42,6 +52,8 @@ namespace HugeGenerator
         public static List<FileInfo> fileInfo = new List<FileInfo>();
 
         public static bool realtimeVersion;
+
+        internal static Timer internalTimer;
 
         public static string AppPath
         {
@@ -113,6 +125,9 @@ namespace HugeGenerator
         private static void Run()
         {
             realtimeVersion = appArgs.Update;
+
+            internalTimer = new Timer(timer_Elapsed);
+            internalTimer.Change(60000, 60000);
 
             string _fol = Path.Combine(AppPath, "Result");
             if (!Directory.Exists(_fol))
@@ -200,20 +215,28 @@ namespace HugeGenerator
                 ellapsed += sw.ElapsedMilliseconds;
             }
 
+            string _fol1 = Path.GetDirectoryName(AppResultPath);
+            if (!Directory.Exists(_fol1))
+                Directory.CreateDirectory(_fol1);
+
             File.WriteAllText(AppResultPath, JsonConvert.SerializeObject(data, Formatting.Indented));
 
             Console.WriteLine("Finished everything in {0} ms!", ellapsed);
             Console.Read();
         }
 
-        private static bool ConsoleEventCallback(int eventType)
+        private static bool ConsoleEventCallback(CtrlType eventType)
         {
-            if (eventType == 2)
+            switch (eventType)
             {
-                if (!realtimeVersion && fileInfo != null && fileInfo.Count > 0)
-                    File.WriteAllText(FileInfoPath, JsonConvert.SerializeObject(fileInfo.ToArray(), Formatting.Indented));
+                case CtrlType.CTRL_C_EVENT:
+                case CtrlType.CTRL_LOGOFF_EVENT:
+                case CtrlType.CTRL_SHUTDOWN_EVENT:
+                case CtrlType.CTRL_CLOSE_EVENT:
+                default:
+                    SaveFileInfo();
+                    return false;
             }
-            return false;
         }
 
         public static string ExportList(string filename, string url)
@@ -296,6 +319,18 @@ namespace HugeGenerator
         internal static void ForceAppShutdown()
         {
             Environment.Exit(0);
+        }
+
+        private static void timer_Elapsed(object o)
+        {
+            // do stuff every minute
+            SaveFileInfo();
+        }
+
+        private static void SaveFileInfo()
+        {
+            if (!realtimeVersion && fileInfo != null && fileInfo.Count > 0)
+                File.WriteAllText(FileInfoPath, JsonConvert.SerializeObject(fileInfo.ToArray(), Formatting.Indented));
         }
     }
 
