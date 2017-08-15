@@ -67,7 +67,7 @@ namespace HugeGenerator
         {
             get
             {
-                return Path.Combine(AppPath, "Result", string.Format("fileInfo_{0}{1}.json", appArgs.RepoID, realtimeVersion ? "" : string.Format("_{0}", executingTime)));
+                return Path.Combine(AppPath, "Result", string.Format("fileInfo_{0}{1}.json", appArgs.RepoID, realtimeVersion ? string.Format("_{0}", executingTime) : ""));
             }
         }
 
