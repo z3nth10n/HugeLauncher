@@ -67,7 +67,7 @@ namespace HugeGenerator
         {
             get
             {
-                return Path.Combine(AppPath, "Result", string.Format("fileInfo_{0}.json", appArgs.RepoID));
+                return Path.Combine(AppPath, "Result", string.Format("fileInfo_{0}{1}.json", appArgs.RepoID, realtimeVersion ? "" : string.Format("_{0}", executingTime)));
             }
         }
 
@@ -80,6 +80,7 @@ namespace HugeGenerator
         }
 
         internal static AppArgs appArgs = new AppArgs();
+        internal static int executingTime = 0;
 
         private static void Main(string[] args)
         {
@@ -128,6 +129,9 @@ namespace HugeGenerator
 
             internalTimer = new Timer(timer_Elapsed);
             internalTimer.Change(60000, 60000);
+
+            TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            executingTime = (int) t.TotalSeconds;
 
             string _fol = Path.Combine(AppPath, "Result");
             if (!Directory.Exists(_fol))
@@ -329,8 +333,11 @@ namespace HugeGenerator
 
         private static void SaveFileInfo()
         {
-            if (!realtimeVersion && fileInfo != null && fileInfo.Count > 0)
+            if (fileInfo != null && fileInfo.Count > 0)
+            { //He quitado el !realtimeVersion, porque aunque sea en tiempo real siempre interesará guardar una copia por si se quiere retomar desde ahí
+                Console.WriteLine("\nSuccessfully saved file info!\n");
                 File.WriteAllText(FileInfoPath, JsonConvert.SerializeObject(fileInfo.ToArray(), Formatting.Indented));
+            }
         }
     }
 
