@@ -13,13 +13,22 @@ using System.Threading;
 
 namespace HugeGenerator
 {
+    public enum LocationData
+    {
+        TagData,
+        TreeData
+    }
+
     internal class Program
     {
         /*
 
             TODO:
 
-            Especificar -update por cli para poner como false o true la bool realtimeVersion
+            Tengo que obtener las distintas versiones, e ir guardando el treeFile y el fileInfo segun la version, ya que, no nos interesa volver a descargar antiguas versiones
+            simplemente queremos actualizar el json para obtener las nuevas
+            En vez de hacer tres listas voy a unificar todo en un archivo, además de que no voy a usar clases personalizadas, si no, JObjects
+            Quiero hacer funcionar esto pa github
 
              */
 
@@ -36,6 +45,8 @@ namespace HugeGenerator
                             FileRepoInfo = "https://gitlab.com/api/v3/projects/{0}/repository/files?ref={1}&file_path={2}",
                             _ModpackName = "HugeCraft";
 
+        public const int _RepoID = 3820415;
+
         private enum CtrlType
         {
             CTRL_C_EVENT = 0,
@@ -44,12 +55,6 @@ namespace HugeGenerator
             CTRL_LOGOFF_EVENT = 5,
             CTRL_SHUTDOWN_EVENT = 6
         }
-
-        public const int _RepoID = 3820415;
-
-        public static List<TagData> tagData = new List<TagData>();
-        public static List<TreeFile> treeFile = new List<TreeFile>();
-        public static List<FileInfo> fileInfo = new List<FileInfo>();
 
         public static bool realtimeVersion;
 
@@ -63,24 +68,26 @@ namespace HugeGenerator
             }
         }
 
-        public static string FileInfoPath
-        {
-            get
-            {
-                return Path.Combine(AppPath, "Result", string.Format("fileInfo_{0}{1}.json", appArgs.RepoID, realtimeVersion ? string.Format("_{0}", executingTime) : ""));
-            }
-        }
-
         public static string AppResultPath
         {
             get
             {
-                return Path.Combine(Path.GetFullPath(appArgs.Path).Replace(Environment.CurrentDirectory, ""), string.Format("{0}_Data.json", appArgs.ModpackName));
+                return Path.Combine(Path.GetFullPath(Path.Combine(AppPath, appArgs.Path)), string.Format("{0}_Data.json", appArgs.ModpackName));
             }
         }
 
+        public static string RepoResultPath
+        {
+            get
+            {
+                return Path.Combine(AppPath, "Result", string.Format("RepoResult_{0}.json", appArgs.RepoID));
+            }
+        }
+
+        internal static RepoData repoData = new RepoData();
         internal static AppArgs appArgs = new AppArgs();
         internal static int executingTime = 0;
+        internal static bool finished;
 
         private static void Main(string[] args)
         {
@@ -145,10 +152,10 @@ namespace HugeGenerator
 
             sw = Stopwatch.StartNew();
 
-            if (!realtimeVersion && File.Exists(FileInfoPath))
-                fileInfo = JsonConvert.DeserializeObject<FileInfo[]>(File.ReadAllText(FileInfoPath)).ToList();
+            if (!realtimeVersion && File.Exists(RepoResultPath))
+                repoData = JsonConvert.DeserializeObject<RepoData>(File.ReadAllText(RepoResultPath));
 
-            tagData = GetTagData();
+            repoData.tagData = GetTagData();
 
             sw.Stop();
 
@@ -159,41 +166,55 @@ namespace HugeGenerator
             AppData data = new AppData();
             data.Name = appArgs.ModpackName;
 
-            foreach (TagData tag in tagData)
+            foreach (JObject tag in repoData.tagData)
             {
-                string reff = tag.Commit["id"].ToObject<string>();
+                string ver = tag["name"].ToObject<string>();
 
-                treeFile = GetRepoTree(reff);
+                if (!repoData.IsLatest(ver) && repoData.ContainsVersion(ver))
+                    continue; //Si no estamos actualizando o si lo estamos haciendo, pero no es la ultima version y dicha version está ya completa entonces skipeamos
+
+                string reff = tag["commit"]["id"].ToObject<string>();
+
+                repoData.GetVersion(ver).treeData = GetRepoTree(reff, ver);
 
                 int i = 0,
-                    count = treeFile.Count;
+                    count = repoData.GetVersion(ver).treeData.Length;
 
                 long curEllapsed = 0;
 
-                foreach (TreeFile file in treeFile)
+                foreach (JObject file in repoData.GetVersion(ver).treeData)
                 {
-                    if (file.Type == FileType.Blob && !fileInfo.Any(x => x.FilePath == file.FilePath))
+                    try
                     {
-                        sw = Stopwatch.StartNew();
-                        Console.WriteLine("Adding {0}... Processed {1} of {2} files ({3:F2}%)", file.FilePath, i, count, i * 100d / count);
+                        string type = file["type"].ToObject<string>();
+                        if (type == "blob" && (repoData.GetVersion(ver).fileData == null || !repoData.GetVersion(ver).fileData.Any(x => x["file_path"].ToObject<string>() == file["path"].ToObject<string>())))
+                        {
+                            sw = Stopwatch.StartNew();
+                            Console.WriteLine("Adding {0}... Processed {1} of {2} files ({3:F2}%)", file["path"].ToObject<string>(), i, count, i * 100d / (count - 1));
 
-                        FileInfo fil = GetFileInfo(file.FilePath, reff);
+                            JObject fil = GetFileInfo(file["path"].ToObject<string>(), reff);
 
-                        if (fil != null)
-                            fileInfo.Add(fil);
+                            if (fil != null)
+                                ArrayExtensions.Append(ref repoData.GetVersion(ver).fileData, fil);
+                            else
+                                Console.WriteLine("Exception ocurred in {0}th file!", i);
+
+                            sw.Stop();
+
+                            Console.WriteLine("Ended in {0} ms!\n", sw.ElapsedMilliseconds);
+
+                            ellapsed += sw.ElapsedMilliseconds;
+                            curEllapsed += sw.ElapsedMilliseconds;
+                        }
                         else
-                            Console.WriteLine("Exception ocurred in {0}th file!", i);
-
-                        sw.Stop();
-
-                        Console.WriteLine("Ended in {0} ms!\n", sw.ElapsedMilliseconds);
-
-                        ellapsed += sw.ElapsedMilliseconds;
-                        curEllapsed += sw.ElapsedMilliseconds;
+                            Console.WriteLine("[{0}: {1}] Skipping file {2}!\n", type, file["path"].ToObject<string>(), i);
+                        ++i;
                     }
-                    else
-                        Console.WriteLine("[{0}: {1}] Skipping file {2}!\n", file.Type, file.FilePath, i);
-                    ++i;
+                    catch
+                    {
+                        Console.WriteLine("Value null!");
+                        sw.Stop();
+                    }
                 }
 
                 Console.WriteLine("[GetTreeFile] Second phase finished in {0} ms!", curEllapsed);
@@ -201,14 +222,14 @@ namespace HugeGenerator
                 sw = Stopwatch.StartNew();
 
                 List<FileData> fileData = new List<FileData>();
-                foreach (FileInfo file in fileInfo)
-                    if (!fileData.Any(x => x.FileName == file.FilePath))
-                        fileData.Add(new FileData(file.BlobId, file.CommitId, file.FilePath, file.Size));
+                foreach (JObject file in repoData.GetVersion(ver).fileData)
+                    if (!fileData.Any(x => x.FileName == file["file_path"].ToObject<string>()))
+                        fileData.Add(new FileData(file["blob_id"].ToObject<string>(), file["commit_id"].ToObject<string>(), file["file_path"].ToObject<string>(), file["size"].ToObject<int>()));
 
                 ModpackData modpack = new ModpackData();
                 modpack.Files = fileData.ToArray();
                 modpack.TotalSize = fileData.Sum(x => x.Size);
-                modpack.Version = tag.Name;
+                modpack.Version = ver;
 
                 data.AddVersion(modpack);
 
@@ -224,6 +245,7 @@ namespace HugeGenerator
                 Directory.CreateDirectory(_fol1);
 
             File.WriteAllText(AppResultPath, JsonConvert.SerializeObject(data, Formatting.Indented));
+            finished = true;
 
             Console.WriteLine("Finished everything in {0} ms!", ellapsed);
             Console.Read();
@@ -238,12 +260,40 @@ namespace HugeGenerator
                 case CtrlType.CTRL_SHUTDOWN_EVENT:
                 case CtrlType.CTRL_CLOSE_EVENT:
                 default:
-                    SaveFileInfo();
+                    SaveRepoData();
                     return false;
             }
         }
 
-        public static string ExportList(string filename, string url)
+        internal static JObject[] GetData(LocationData data, string ver)
+        {
+            if (repoData == null) return null;
+            switch (data)
+            {
+                case LocationData.TreeData:
+                    return repoData.GetVersion(ver).treeData;
+
+                case LocationData.TagData:
+                    return repoData.tagData;
+            }
+            return null;
+        }
+
+        internal static void UpdateData(LocationData data, JObject[] obj, string ver = "")
+        {
+            switch (data)
+            {
+                case LocationData.TreeData:
+                    repoData.GetVersion(ver).treeData = obj;
+                    break;
+
+                case LocationData.TagData:
+                    repoData.tagData = obj;
+                    break;
+            }
+        }
+
+        public static JObject[] ExportList(string url, LocationData data, string ver = "")
         {
             try
             {
@@ -251,11 +301,11 @@ namespace HugeGenerator
                 {
                     try
                     {
-                        string filePath = Path.Combine(AppPath, "Result", filename);
-                        bool realtime = realtimeVersion || !File.Exists(filePath);
-                        string content = realtime ? client.DownloadString(url) : File.ReadAllText(filePath);
-                        if (realtime)
-                            File.WriteAllText(filePath, content);
+                        JObject[] obj = GetData(data, ver);
+                        bool realtime = realtimeVersion || obj == null;
+                        JObject[] content = realtime ? JsonConvert.DeserializeObject<JObject[]>(client.DownloadString(url)) : obj;
+                        if (realtime) //Si hemos traido los datos de internet actualizar
+                            UpdateData(data, obj, ver);
                         return content;
                     }
                     catch
@@ -273,17 +323,17 @@ namespace HugeGenerator
             }
         }
 
-        public static List<TagData> GetTagData()
+        public static JObject[] GetTagData()
         {
-            return JsonConvert.DeserializeObject<TagData[]>(ExportList(string.Format("tagData_{0}.json", appArgs.RepoID), string.Format(TagList, appArgs.RepoID))).ToList();
+            return ExportList(string.Format(TagList, appArgs.RepoID), LocationData.TagData);
         }
 
-        public static List<TreeFile> GetRepoTree(string reff)
+        public static JObject[] GetRepoTree(string reff, string ver)
         {
-            return JsonConvert.DeserializeObject<TreeFile[]>(ExportList(string.Format("treeFile_{0}.json", appArgs.RepoID), string.Format(TreeList, appArgs.RepoID, reff))).ToList();
+            return ExportList(string.Format(TreeList, appArgs.RepoID, reff), LocationData.TreeData, ver);
         }
 
-        public static FileInfo GetFileInfo(string path, string reff)
+        public static JObject GetFileInfo(string path, string reff)
         {
             try
             {
@@ -292,8 +342,8 @@ namespace HugeGenerator
                     try
                     {
                         string content = client.DownloadString(string.Format(FileRepoInfo, appArgs.RepoID, reff, path));
-                        FileInfo file = JsonConvert.DeserializeObject<FileInfo>(content);
-                        file.Content = ""; //Para ahorrar espacio
+                        JObject file = JsonConvert.DeserializeObject<JObject>(content);
+                        file["content"] = null; //Para ahorrar espacio
                         return file;
                     }
                     catch
@@ -328,82 +378,82 @@ namespace HugeGenerator
         private static void timer_Elapsed(object o)
         {
             // do stuff every minute
-            SaveFileInfo();
+            if (!finished)
+                SaveRepoData();
         }
 
-        private static void SaveFileInfo()
+        private static void SaveRepoData()
         {
-            if (fileInfo != null && fileInfo.Count > 0)
+            if (repoData != null && repoData.latestRelease.ContainsData())
             { //He quitado el !realtimeVersion, porque aunque sea en tiempo real siempre interesará guardar una copia por si se quiere retomar desde ahí
-                Console.WriteLine("\nSuccessfully saved file info!\n");
-                File.WriteAllText(FileInfoPath, JsonConvert.SerializeObject(fileInfo.ToArray(), Formatting.Indented));
+                Console.WriteLine("\nSuccessfully saved repo data into IO!\n");
+                File.WriteAllText(RepoResultPath, JsonConvert.SerializeObject(repoData, Formatting.Indented));
             }
         }
     }
 
-    public enum FileType { Tree, Blob }
-
-    public class TreeFile
+    public class RepoData
     {
-        [JsonProperty("id")]
-        public string Id;
+        public ObjectData[] objData;
+        public JObject[] tagData; //All available releases with their commits
 
-        [JsonProperty("name")]
-        public string FileName;
+        [JsonIgnore]
+        public ObjectData latestRelease
+        {
+            get
+            {
+                if (objData != null && objData.Length > 0)
+                    return objData[0]; //Supuestamente la ultima release es el primer valor de la array
+                return null;
+            }
+        }
 
-        [JsonProperty("path")]
-        public string FilePath;
+        public ObjectData GetVersion(string key)
+        {
+            bool isNNull = objData != null && objData.Length > 0;
+            ObjectData data = isNNull ? objData.SingleOrDefault(x => x.Version == key) : null;
+            if (isNNull)
+                return data;
+            else if (data == null || !isNNull)
+            {
+                ObjectData obj = new ObjectData() { Version = key };
+                ArrayExtensions.Append(ref objData, obj);
+                return obj;
+            }
+            return null;
+        }
 
-        [JsonProperty("type")]
-        public FileType Type;
+        public bool IsLatestNull()
+        {
+            return latestRelease == null;
+        }
 
-        [JsonProperty("mode")]
-        public int Mode;
+        public bool IsLatest(string ver)
+        {
+            return latestRelease != null && latestRelease.Version == ver;
+        }
+
+        public bool ContainsVersion(string ver)
+        {
+            ObjectData data = GetVersion(ver);
+            return data != null
+                && (data.treeData != null && data.treeData.Length > 0
+                || data.fileData != null && data.fileData.Length > 0);
+        }
     }
 
-    public class FileInfo
+    public class ObjectData
     {
-        [JsonProperty("file_name")]
-        public string FileName;
+        public string Version;
 
-        [JsonProperty("file_path")]
-        public string FilePath;
+        public JObject[] treeData, //All files of a repo of a current commit
+                         fileData; //Individual file data
 
-        [JsonProperty("encoding")]
-        public string Encoding;
-
-        [JsonProperty("content")]
-        public string Content;
-
-        [JsonProperty("ref")]
-        public string Ref;
-
-        [JsonProperty("blob_id")]
-        public string BlobId;
-
-        [JsonProperty("commit_id")]
-        public string CommitId;
-
-        [JsonProperty("last_commit_id")]
-        public string LastCommitId;
-
-        [JsonProperty("size")]
-        public int Size;
-    }
-
-    public class TagData
-    {
-        [JsonProperty("release")]
-        public object Release;
-
-        [JsonProperty("commit")]
-        public JObject Commit;
-
-        [JsonProperty("message")]
-        public string Message;
-
-        [JsonProperty("name")]
-        public string Name;
+        public bool ContainsData()
+        {
+            return treeData != null && treeData.Length > 0
+                || fileData != null && fileData.Length > 0;
+        }
     }
 
     //This needs to go to the API
@@ -458,9 +508,6 @@ namespace HugeGenerator
         public void AddVersion(ModpackData data)
         {
             ArrayExtensions.Append(ref Versions, data);
-            /*List<ModpackData> mData = Versions != null ? Versions.ToList() : new List<ModpackData>();
-            mData.Add(data);
-            Versions = mData.ToArray();*/
         }
     }
 
