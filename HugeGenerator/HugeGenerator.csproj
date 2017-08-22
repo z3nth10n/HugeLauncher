@@ -68,6 +68,12 @@
   <ItemGroup>
     <Content Include="ILMergeOrder.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HugeAPI\HugeAPI.csproj">
+      <Project>{12533e7e-3ad4-4903-a702-4a6537d69a6b}</Project>
+      <Name>HugeAPI</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
