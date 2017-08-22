@@ -104,10 +104,8 @@ namespace HugeGenerator
                 .Callback(x => appArgs.RepoUrl = x)
                 .WithDescription("Specify the ID of the repository.");
 
-            // Console.WriteLine(appArgs.RepoUrl);
-
-            //if (appArgs.RepoUrl == default(string))
-            //    appArgs.RepoUrl = _DefRepoUrl;
+            if (appArgs.RepoUrl == default(string))
+                appArgs.RepoUrl = _DefRepoUrl;
 
             p.Setup<bool>('u', "update")
                 .Callback(x => appArgs.Update = x)
@@ -242,9 +240,7 @@ namespace HugeGenerator
                 {
                     try
                     {
-                        //Console.WriteLine(RepoAPI.repoType.ToString());
-                        JToken[] obj = GetData(data, ver); //El problema está aqui
-                        //Console.WriteLine(ver + " " + (obj == null || obj != null && obj.Count == 0));
+                        JToken[] obj = GetData(data, ver);
                         bool realtime = realtimeVersion || (obj == null || obj != null && obj.Length == 0);
                         object content = realtime ? (RepoAPI.repoType == RepoType.Gitlab ? (object) JsonConvert.DeserializeObject<JArray>(client.DownloadString(url)) : JsonConvert.DeserializeObject<JObject>(client.DownloadString(url))) : (object) obj;
                         JToken[] ret = realtime ? (RepoAPI.repoType == RepoType.Gitlab ? ((JArray) content).Children().ToArray() : ((GithubRepo) repoApi).GetArray((JObject) content)) : (JToken[]) content;
@@ -255,9 +251,6 @@ namespace HugeGenerator
                             else
                                 loadedFiles = ret.Length;
                         }
-                        //Console.WriteLine("Ret NUL: {0}; Obj NUL: {1}", ret == null, obj == null);
-                        //Console.WriteLine(RepoAPI.repoType.ToString());
-                        //Console.WriteLine(JsonConvert.SerializeObject(content));
                         if (realtime) //Si hemos traido los datos de internet actualizar (TB SI SON DEL DISCO, PORQUE AUN ASI HAY QUE PASARLOS A MEMORIA)
                             UpdateData(data, ret, ver);
                         return ret;
@@ -338,9 +331,6 @@ namespace HugeGenerator
             int c = r.objData.Length - 1;
 
             JArray _tagData = new JArray(r.tagData);
-            //r.tagData.ForEach(x => Console.WriteLine(JsonConvert.SerializeObject(x))); //_tagData.Add(x));
-            //Console.Read();
-            //_tagData = new JObject(); //r.tagData.Select(x => new JObject(x)).ToArray();
 
             if (r.objData.Any(x => x != null && x.treeData == null) || RepoAPI.repoType == RepoType.Gitlab && r.objData.Any(x => x != null && x.fileData == null))
                 return null;
@@ -354,13 +344,6 @@ namespace HugeGenerator
                            RepoAPI.repoType == RepoType.Gitlab ?
                            new JArray(x.fileData) : null))
                        .ToArray();
-
-            /*for (int i = 0; i < c; ++i)
-            {
-                if (objData[i].treeData != null) objData[i].treeData = r.objData[i].treeData.Select(x => new JObject(x)).ToArray();
-                if (RepoAPI.repoType == RepoType.Gitlab && objData[i].fileData != null)
-                    objData[i].fileData = r.objData[i].fileData.Select(x => new JObject(x)).ToArray();
-            }*/
 
             SerializedRepoData repo = new SerializedRepoData(_tagData, _objData);
             return repo;
@@ -437,15 +420,11 @@ namespace HugeGenerator
         {
             RepoData repo = new RepoData();
             int c = objData.Length - 1;
-            //Console.WriteLine(JsonConvert.SerializeObject(tagData.Children()[0]));
-            //Console.Read();
             repo.tagData = tagData.Children().ToArray();
             repo.objData = new ObjectData[c];
             repo.objData.ForEach((x, i) =>
             {
                 x = new ObjectData() { Version = objData[i].Version };
-                //int ctr = objData[i].treeData.Children().Count();
-                //x.treeData = new JToken[ctr];
                 x.treeData = objData[i].treeData.Children().ToArray();
                 if (RepoAPI.repoType == RepoType.Gitlab)
                     x.fileData = objData[i].fileData.Children().ToArray();
@@ -587,27 +566,6 @@ namespace HugeGenerator
         public string RepoUrl { get; set; }
 
         public bool ForceUdateOldReleases { get; set; }
-
-        //private int i = 0;
-
-        /*private string _rep = "";
-
-        public string RepoUrl
-        {
-            get
-            {
-                return _rep;
-            }
-            set
-            {
-                StackTrace t = new StackTrace();
-                Console.WriteLine(i + ": " + t.ToString());
-                ++i;
-                _rep = value;
-            }
-        }*/
-
-        //public string Ref { get; set; } //If you want to catch only one value
         public string ModpackName { get; set; }
 
         public string SavePath { get; set; }
@@ -616,10 +574,6 @@ namespace HugeGenerator
         {
             get
             {
-                /*StackTrace t = new StackTrace();
-                Console.WriteLine(i + ": " + t.ToString());
-                ++i;*/
-
                 Uri uri = new Uri(RepoUrl); //RepoUrl
                 string str = uri.Host + uri.PathAndQuery + uri.Fragment;
                 return str.Split('/')[1];
@@ -653,8 +607,6 @@ namespace HugeGenerator
 
         public static RepoType repoType;
 
-        //private RepoType repoType;
-
         public RepoAPI(RepoType type)
         {
             repoType = type;
@@ -669,18 +621,11 @@ namespace HugeGenerator
 
         public JToken[] GetTagData()
         {
-            //Console.WriteLine(GetTagUrl());
-            //Console.WriteLine(Program.appArgs.RepoUrl);
             return Program.ExportList(GetTagUrl(), LocationData.TagData);
         }
 
         public JToken[] GetTreeData(string reff, string ver = "")
         {
-            //Console.WriteLine(GetTreeUrl(reff));
-            /*Console.WriteLine("bbb");
-            var r = Program.ExportList(GetTreeUrl(reff), LocationData.TreeData, !string.IsNullOrEmpty(ver) ? ver : reff);
-            Console.WriteLine("NUL: " + (r == null));*/
-            //Console.WriteLine(r.Count);
             return Program.ExportList(GetTreeUrl(reff), LocationData.TreeData, !string.IsNullOrEmpty(ver) ? ver : reff); //r
         }
 
@@ -691,12 +636,6 @@ namespace HugeGenerator
             //Is this needed as callback?
             GetTags(() =>
             {
-                //Is this really needed?
-                /*if (repoType == RepoType.Github)
-                    ((GithubRepo) repoApi).GetTree();
-                else
-                    ((GitlabRepo) repoApi).GetTree();*/
-
                 Program.repoApi.GetTree();
 
                 string _fol1 = Path.GetDirectoryName(Program.AppResultPath);
@@ -738,11 +677,6 @@ namespace HugeGenerator
 
             List<FileData> fileData = new List<FileData>();
 
-            //Is this really needed?
-            /*if (repoType == RepoType.Github)
-                fileData = ((GithubRepo) repoApi).MakeFileDataConversion(ver);
-            else
-                fileData = ((GitlabRepo) repoApi).MakeFileDataConversion(ver);*/
             fileData = Program.repoApi.MakeFileDataConversion(ver);
 
             ModpackData modpack = new ModpackData();
@@ -811,18 +745,13 @@ namespace HugeGenerator
 
         public JToken[] GetArray(JObject obj)
         {
-            //Console.WriteLine(obj.Properties().Count());
-            //obj.Properties().ForEach(x => Console.WriteLine(x.Name));
-            //Console.WriteLine(JsonConvert.SerializeObject(obj["data"]));
-            //Console.WriteLine(obj["data"].Count());
             try
             {
-                //Console.WriteLine(JsonConvert.SerializeObject(new JToken[](obj["data"])[0]));
                 return obj["data"].Children().ToArray(); //No se puede castear
             }
             catch (Exception ex)
             {
-                Console.WriteLine("EX: {0}; String: {1}", ex.ToString(), obj.ToString().Substring(0, 1000)); //.ToString().Substring(0, 1000)
+                Console.WriteLine("EX: {0}; String: {1}", ex.ToString(), obj.ToString().Substring(0, 1000));
                 return null;
             }
         }
@@ -839,29 +768,18 @@ namespace HugeGenerator
 
         protected override void GetTree()
         {
-            //var test = Program.repoData.tagData;
-            //Console.WriteLine(JsonConvert.SerializeObject(test));
-            //test.ForEach(x => Console.WriteLine(x.Path));
-            //test[0].ToObject<JObject>().Properties().ForEach(x => Console.WriteLine(x.Name));
-            //Program.repoData.tagData.ForEach(x => Console.WriteLine(x.Path));
-            //Console.WriteLine(JsonConvert.SerializeObject(Program.repoData.tagData[0]));
             int i = 0,
                 count = Program.repoData.tagData.Length - 1;
             foreach (JToken tag in Program.repoData.tagData)
             {
                 watch = Stopwatch.StartNew();
                 Console.WriteLine("[{0}] Parsing version {1} of {2}...", i < Program.loadedTrees ? "Loading" : "Creating", i, count);
-                //Console.WriteLine(JsonConvert.SerializeObject(tag, Formatting.Indented));
-                //Console.WriteLine(JsonConvert.SerializeObject(tag, Formatting.Indented));
+
                 string reff = tag["object"]["sha"].ToObject<string>();
 
                 if (!Program.repoData.IsLatest(reff) && Program.repoData.ContainsVersion(reff))
                     continue; //Si no estamos actualizando o si lo estamos haciendo, pero no es la ultima version y dicha version está ya completa entonces skipeamos
 
-                //Console.WriteLine("aaaa");
-                //Console.WriteLine(JsonConvert.SerializeObject(Program.repoApi.GetTreeData(reff)));
-
-                //Console.WriteLine("NUL2: " + (Program.repoApi == null));
                 Program.repoData.GetVersion(reff).treeData = Program.repoApi.GetTreeData(reff);
 
                 watch.Stop();
@@ -872,26 +790,16 @@ namespace HugeGenerator
                 CreateModpack(reff);
                 ++i;
                 Console.WriteLine();
-                //Program.SaveRepoData();
             }
-            //throw new NotImplementedException();
         }
 
         protected override List<FileData> MakeFileDataConversion(string ver)
         {
             List<FileData> fileData = new List<FileData>();
-            //Console.WriteLine("aaskfkgkaa");
-            //Console.WriteLine(Program.repoData.GetVersion(ver).fileData == null);
-            //Console.WriteLine(JsonConvert.SerializeObject(Program.repoData.GetVersion(ver).treeData[2], Formatting.Indented));
-            //Console.WriteLine(Program.repoData.GetVersion(ver).treeData[2].Children()[0].Count());
+
             foreach (JToken file in Program.repoData.GetVersion(ver).treeData[2].Children()[0])
-            {
-                //Console.WriteLine(JsonConvert.SerializeObject(file));
-                //Console.Read();
-                //Console.WriteLine(file.Count());
                 if (!fileData.Any(x => x.FileName == file["path"].ToObject<string>()))
                     fileData.Add(new FileData(file["url"].ToObject<string>(), file["size"].ToObject<int>()));
-            }
             return fileData;
         }
     }
@@ -912,24 +820,21 @@ namespace HugeGenerator
                 treeUrl = "https://gitlab.com/api/v3/projects/{0}/repository/tree?ref={1}&recursive=1";
                 tagUrl = "https://gitlab.com/api/v3/projects/{0}/repository/tags";
                 fileUrl = "https://gitlab.com/api/v3/projects/{0}/repository/files?ref={1}&file_path={2}";
+
                 string html = WebExtensions.DownloadString(Program.appArgs.RepoUrl);
+
                 if (string.IsNullOrEmpty(html))
                     throw new Exception("There was a problem downloading html from the Gitlab repo!");
-                //HtmlDocument doc = new HtmlDocument();
-                //doc.LoadHtml(html);
-                //doc.DocumentNode.Descendants().Where(x => x.Attributes["name"] != null).ForEach(x => Console.WriteLine(x.Attributes["name"].Value));
-                /*var element = doc.DocumentNode
-                    .Descendants()
-                    .Where(x => x.Attributes["name"] != null)
-                    .SingleOrDefault(node => node.Attributes["name"].Value == "project_id");*/
-                //var element = doc.DocumentNode.SelectSingleNode("//input[@name='project_id']");
+
                 CQ doc = CQ.Create(html),
                    element = doc["input[name=project_id]"];
+
                 if (element == null)
                     throw new Exception(
                         string.Format(
                             "[{0}] You hadn't passed a valid Gitlab project url! Please, specify only the root: http://gitlab.com/Author/Repository_name/, if the problem persists, please tell it to the owner!",
                             Program.appArgs.RepoUrl));
+
                 RepoID = int.Parse(element[0].Attributes["value"]);
             }
             catch (Exception ex)
@@ -1057,24 +962,4 @@ namespace HugeGenerator
             return string.Format("https://gitlab.com/{0}/{1}/raw/{2}/{3}", col["author"], col["name"], col["cid"], col["path"]);
         }
     }
-
-    /*public class JData : JObject
-    {
-        public JObject[] data;
-
-        public JData(JObject[] d)
-        {
-            data = d;
-        }
-
-        public static implicit operator JObject[] (JData dat)
-        {
-            return dat.data;
-        }
-
-        public static explicit operator JData(JObject[] dat)
-        {
-            return new JData(dat);
-        }
-    }*/
 }
