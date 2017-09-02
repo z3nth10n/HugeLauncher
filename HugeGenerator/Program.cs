@@ -2,6 +2,7 @@
 using CsQuery.ExtensionMethods;
 using Fclp;
 using HugeAPI;
+using Lerp2Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -13,7 +14,6 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 
 namespace HugeGenerator
@@ -594,35 +594,8 @@ namespace HugeGenerator
         {
             get
             {
-                if (!string.IsNullOrEmpty(_realUrl))
-                    return _realUrl;
-                string localhost = "localhost/lerp2php/hugelauncherphp",
-                       lerp2dev = "lerp2dev.com/misc/Lerp2PHP/HugeLauncherPHP",
-                       concatUrl = "http://{0}/Check.php",
-                       localhostUrl = string.Format(concatUrl, localhost);
-                try
-                {
-                    var request = WebRequest.Create(localhostUrl);
-                    using (var response = request.GetResponse())
-                    {
-                        using (var responseStream = response.GetResponseStream())
-                        {
-                            // Process the stream
-                            using (StreamReader reader = new StreamReader(responseStream, Encoding.UTF8))
-                            {
-                                if (reader.ReadToEnd() == "OK")
-                                    _realUrl = localhost;
-                                else
-                                    _realUrl = lerp2dev;
-                            }
-                        }
-                    }
-                }
-                catch (WebException ex)
-                {
-                    _realUrl = localhost;
-                }
-                return _realUrl;
+                string url = Lerp2Web.Lerp2Web.APIServer;
+                return string.Format("{0}{1}", url, url.Contains("localhost") ? "hugelauncherphp" : "HugeLauncherPHP");
             }
         }
 
