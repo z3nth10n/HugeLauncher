@@ -1,4 +1,5 @@
 HugeGenerator.exe
+HugeAPI.dll
+Lerp2Web.dll
 CsQuery.dll
 FluentCommandLineParser.dll
-Newtonsoft.Json.dll

@@ -33,9 +33,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Lerp2Web">
+      <HintPath>..\..\Lerp2Web\Lerp2Web\bin\Release\Lerp2Web.dll</HintPath>
+    </Reference>
+    <Reference Include="LiteLerped-WF-API">
+      <HintPath>..\..\LiteLerped-WF-API\LiteLerped-WF-API\bin\Debug\LiteLerped-WF-API.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -83,6 +85,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HugeAPI\HugeAPI.csproj">
+      <Project>{12533e7e-3ad4-4903-a702-4a6537d69a6b}</Project>
+      <Name>HugeAPI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

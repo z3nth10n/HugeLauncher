@@ -1,0 +1,7 @@
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\bin\Debug\HugeAPI.dll
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\bin\Debug\HugeAPI.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\bin\Debug\Lerp2Web.dll
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\bin\Debug\Lerp2Web.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\obj\Debug\HugeAPI.dll
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\obj\Debug\HugeAPI.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\obj\Debug\HugeAPI.csprojResolveAssemblyReference.cache
