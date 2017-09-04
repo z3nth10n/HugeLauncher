@@ -126,7 +126,7 @@
     <value>0, 0</value>
   </data>
   <data name="richTextBox1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>273, 250</value>
+    <value>280, 250</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="richTextBox1.TabIndex" type="System.Int32, mscorlib">
@@ -148,7 +148,7 @@
     <value>1</value>
   </data>
   <data name="button1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>99, 256</value>
+    <value>103, 256</value>
   </data>
   <data name="button1.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 23</value>
@@ -178,7 +178,7 @@
     <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>273, 285</value>
+    <value>280, 285</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>frmTutorial</value>

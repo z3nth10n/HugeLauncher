@@ -30,6 +30,9 @@ namespace HugeLauncher
 
         private static JObject _clientVers;
 
+        private static bool runClient,
+                            runServer;
+
         private static List<ModpackData> modpackData = new List<ModpackData>();
 
         internal static JObject clientVersions
@@ -108,6 +111,11 @@ namespace HugeLauncher
 
         private void btnRuninsClient_Click(object sender, EventArgs e)
         {
+            if (runClient)
+            {
+            }
+            else
+                DownloadData(PackType.Client);
         }
 
         private void btnDelClient_Click(object sender, EventArgs e)
@@ -116,6 +124,11 @@ namespace HugeLauncher
 
         private void btnRunisServer_Click(object sender, EventArgs e)
         {
+            if (runServer)
+            {
+            }
+            else
+                DownloadData(PackType.Server);
         }
 
         private void btnDelServer_Click(object sender, EventArgs e)
@@ -167,6 +180,7 @@ namespace HugeLauncher
             if (IsVersionSetup(comboBox1.SelectedIndex, PackType.Client))
             {
                 btnRuninsClient.Text = "Abrir Launcher";
+                runClient = true;
             }
             else
             {
@@ -187,12 +201,17 @@ namespace HugeLauncher
         { //Inject a frame form
             //string title = "Starting tutorial";
             //MessageBox.Show(title, "Welcome to HugeLauncher! With this launcher you");
-            frmTutorial tutorial = new frmTutorial() { TopMost = true };
+            Point p = instance.Location;
+            frmTutorial tutorial = new frmTutorial()
+            {
+                TopMost = true,
+                Location = new Point(p.X + 9, p.Y + 55)
+            };
             tutorial.Show();
             instance.LocationChanged += (sender, e) =>
             {
-                Point p = instance.Location;
-                tutorial.Location = new Point(p.X + 9, p.Y + 55);
+                Point p1 = instance.Location;
+                tutorial.Location = new Point(p1.X + 9, p1.Y + 55);
             };
         }
 
@@ -207,6 +226,18 @@ namespace HugeLauncher
             File.WriteAllText(DataFilePath, JsonConvert.SerializeObject(modpackData.ToArray()));
         }
 
+        private void DownloadData(PackType type)
+        {
+            int index = comboBox1.SelectedIndex;
+            string path = GetFolderPathVer(index, type);
+            JObject obj = type == PackType.Client ? clientVersions : serverVersions;
+            JEnumerable<JToken> dl = obj["Versions"].Children().ElementAt(index)["Files"].Children();
+            foreach (JToken token in dl)
+            {
+                //https://stackoverflow.com/questions/9459225/asynchronous-file-download-with-progress-bar
+            }
+        }
+
         private void mostrarTutorialInicialToolStripMenuItem_Click(object sender, EventArgs e)
         {
             StartingTutorial();
@@ -214,8 +245,13 @@ namespace HugeLauncher
 
         public static bool IsVersionSetup(int index, PackType type)
         {
-            string folder = Path.Combine(ModpackFolderPath, ModpackName, GetVersionStr(index, type));
+            string folder = GetFolderPathVer(index, type);
             return Directory.Exists(folder) && !folder.IsDirectoryEmpty();
+        }
+
+        public static string GetFolderPathVer(int index, PackType type)
+        {
+            return Path.Combine(ModpackFolderPath, ModpackName, type.ToString(), GetVersionStr(index, type));
         }
 
         public static string GetVersionStr(int index, PackType type)

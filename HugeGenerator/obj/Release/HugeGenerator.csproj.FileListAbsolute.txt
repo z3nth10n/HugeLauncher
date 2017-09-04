@@ -2,3 +2,14 @@ D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\HugeGe
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\obj\Release\HugeGenerator.csprojResolveAssemblyReference.cache
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\obj\Release\HugeGenerator.exe
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\obj\Release\HugeGenerator.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\HugeGenerator.exe
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\HugeGenerator.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\CsQuery.dll
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\FluentCommandLineParser.dll
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\HugeAPI.dll
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\Lerp2Web.dll
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\HugeAPI.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\CsQuery.xml
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\FluentCommandLineParser.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\FluentCommandLineParser.xml
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\Lerp2Web.pdb
