@@ -31,11 +31,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.btnDelClient = new System.Windows.Forms.Button();
+            this.btnRuninsClient = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.btnDelServer = new System.Windows.Forms.Button();
+            this.btnRunisServer = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -43,9 +45,15 @@
             this.label3 = new System.Windows.Forms.Label();
             this.pbTotalDownload = new System.Windows.Forms.ProgressBar();
             this.label4 = new System.Windows.Forms.Label();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.opcionesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.establecerRutaDeInstalaciónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.mostrarTutorialInicialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -58,43 +66,59 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.button3);
-            this.tabPage1.Controls.Add(this.button1);
+            this.tabPage1.Controls.Add(this.label5);
+            this.tabPage1.Controls.Add(this.btnDelClient);
+            this.tabPage1.Controls.Add(this.btnRuninsClient);
             resources.ApplyResources(this.tabPage1, "tabPage1");
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // label5
             // 
-            resources.ApplyResources(this.button3, "button3");
-            this.button3.Name = "button3";
-            this.button3.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.label5, "label5");
+            this.label5.Name = "label5";
             // 
-            // button1
+            // btnDelClient
             // 
-            resources.ApplyResources(this.button1, "button1");
-            this.button1.Name = "button1";
-            this.button1.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.btnDelClient, "btnDelClient");
+            this.btnDelClient.Name = "btnDelClient";
+            this.btnDelClient.UseVisualStyleBackColor = true;
+            this.btnDelClient.Click += new System.EventHandler(this.btnDelClient_Click);
+            // 
+            // btnRuninsClient
+            // 
+            resources.ApplyResources(this.btnRuninsClient, "btnRuninsClient");
+            this.btnRuninsClient.Name = "btnRuninsClient";
+            this.btnRuninsClient.UseVisualStyleBackColor = true;
+            this.btnRuninsClient.Click += new System.EventHandler(this.btnRuninsClient_Click);
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.button4);
-            this.tabPage2.Controls.Add(this.button2);
+            this.tabPage2.Controls.Add(this.label6);
+            this.tabPage2.Controls.Add(this.btnDelServer);
+            this.tabPage2.Controls.Add(this.btnRunisServer);
             resources.ApplyResources(this.tabPage2, "tabPage2");
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // button4
+            // label6
             // 
-            resources.ApplyResources(this.button4, "button4");
-            this.button4.Name = "button4";
-            this.button4.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.label6, "label6");
+            this.label6.Name = "label6";
             // 
-            // button2
+            // btnDelServer
             // 
-            resources.ApplyResources(this.button2, "button2");
-            this.button2.Name = "button2";
-            this.button2.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.btnDelServer, "btnDelServer");
+            this.btnDelServer.Name = "btnDelServer";
+            this.btnDelServer.UseVisualStyleBackColor = true;
+            this.btnDelServer.Click += new System.EventHandler(this.btnDelServer_Click);
+            // 
+            // btnRunisServer
+            // 
+            resources.ApplyResources(this.btnRunisServer, "btnRunisServer");
+            this.btnRunisServer.Name = "btnRunisServer";
+            this.btnRunisServer.UseVisualStyleBackColor = true;
+            this.btnRunisServer.Click += new System.EventHandler(this.btnRunisServer_Click);
             // 
             // comboBox1
             // 
@@ -132,6 +156,34 @@
             resources.ApplyResources(this.label4, "label4");
             this.label4.Name = "label4";
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.opcionesToolStripMenuItem});
+            resources.ApplyResources(this.menuStrip1, "menuStrip1");
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
+            // 
+            // opcionesToolStripMenuItem
+            // 
+            this.opcionesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.establecerRutaDeInstalaciónToolStripMenuItem,
+            this.mostrarTutorialInicialToolStripMenuItem});
+            this.opcionesToolStripMenuItem.Name = "opcionesToolStripMenuItem";
+            resources.ApplyResources(this.opcionesToolStripMenuItem, "opcionesToolStripMenuItem");
+            // 
+            // establecerRutaDeInstalaciónToolStripMenuItem
+            // 
+            this.establecerRutaDeInstalaciónToolStripMenuItem.Name = "establecerRutaDeInstalaciónToolStripMenuItem";
+            resources.ApplyResources(this.establecerRutaDeInstalaciónToolStripMenuItem, "establecerRutaDeInstalaciónToolStripMenuItem");
+            this.establecerRutaDeInstalaciónToolStripMenuItem.Click += new System.EventHandler(this.establecerRutaDeInstalaciónToolStripMenuItem_Click);
+            // 
+            // mostrarTutorialInicialToolStripMenuItem
+            // 
+            this.mostrarTutorialInicialToolStripMenuItem.Name = "mostrarTutorialInicialToolStripMenuItem";
+            resources.ApplyResources(this.mostrarTutorialInicialToolStripMenuItem, "mostrarTutorialInicialToolStripMenuItem");
+            this.mostrarTutorialInicialToolStripMenuItem.Click += new System.EventHandler(this.mostrarTutorialInicialToolStripMenuItem_Click);
+            // 
             // frmMain
             // 
             resources.ApplyResources(this, "$this");
@@ -144,14 +196,20 @@
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmMain";
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -162,17 +220,24 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ProgressBar pbFileDownload;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
         private System.Windows.Forms.ProgressBar pbTotalDownload;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button btnDelClient;
+        private System.Windows.Forms.Button btnRuninsClient;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button btnDelServer;
+        private System.Windows.Forms.Button btnRunisServer;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem opcionesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem establecerRutaDeInstalaciónToolStripMenuItem;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.ToolStripMenuItem mostrarTutorialInicialToolStripMenuItem;
     }
 }
 

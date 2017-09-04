@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LiteLerped_WF_API.Classes;
+using System;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using LiteProgram = LiteLerped_WF_API.Program;
 
@@ -15,19 +15,25 @@ namespace HugeLauncher
         [STAThread]
         private static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Run(new frmMain());
-        }
-
-        private static void Run(frmMain main)
-        {
             Console.WriteLine("Running program!");
 
-            //Run LiteLerped-WF-API
-            LiteProgram.Run("hugelauncher_", main);
-
-            Application.Run(main);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            LiteProgram.Run("hugelauncher_", new frmMain(), () =>
+            {
+            });
         }
+    }
+
+    public static class API
+    {
+        public static bool IsDirectoryEmpty(this string path)
+        {
+            return !Directory.EnumerateFileSystemEntries(path).Any();
+        }
+    }
+
+    public class HugeConfigKeys : LerpedConfigKeys
+    {
     }
 }

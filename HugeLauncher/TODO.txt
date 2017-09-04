@@ -1,0 +1,5 @@
+﻿Hacer que el usuario pueda definir donde guardar sus modpacks... Si no por defecto será en %APPDATA%/.hugelauncher
+
+Estoy pensando que quizas sea una tonteria, y que lo suyo sea que sea contigua al ejecutable, a no ser que se especifique una ruta distinta
+
+el starting tutorial lo que voy a hacer es añadir un label por encima de toda la interfaz (o quizas un form dentro de otro form, mostrando lo que hay que hacer y los aparados)

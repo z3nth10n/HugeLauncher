@@ -17,3 +17,4 @@ D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Debug\HugeLaunc
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Debug\HugeLauncher.csproj.GenerateResource.Cache
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Debug\HugeLauncher.exe
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Debug\HugeLauncher.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Debug\HugeLauncher.frmTutorial.resources
