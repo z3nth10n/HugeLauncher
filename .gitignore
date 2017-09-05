@@ -1,3 +1,4 @@
 *.json
 /packages/
 /.vs/
+/HugeLauncher/bin/

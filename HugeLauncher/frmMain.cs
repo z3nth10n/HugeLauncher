@@ -4,10 +4,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 using LWeb = Lerp2Web.Lerp2Web;
 using WebAPI = Lerp2Web.API;
@@ -120,6 +123,12 @@ namespace HugeLauncher
 
         private void btnDelClient_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("Are you sure?", "Application message", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                new DirectoryInfo(GetFolderPathVer(comboBox1.SelectedIndex, PackType.Client)).Empty();
+                runClient = false;
+                RutineVersionInstalled(PackType.Client);
+            }
         }
 
         private void btnRunisServer_Click(object sender, EventArgs e)
@@ -177,19 +186,10 @@ namespace HugeLauncher
             comboBox1.SelectedIndex = 0; //El 0 se va a convertir en el last played version
 
             //Once we selected the version of the client, then check if version is installed
-            if (IsVersionSetup(comboBox1.SelectedIndex, PackType.Client))
-            {
-                btnRuninsClient.Text = "Abrir Launcher";
-                runClient = true;
-            }
-            else
-            {
-                btnRuninsClient.Text = "Instalar versión";
-                btnDelClient.Visible = false;
-            }
+            RutineVersionInstalled(PackType.Client);
         }
 
-        private void menuStrip1_ItemClicked(object sender, System.Windows.Forms.ToolStripItemClickedEventArgs e)
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
         }
 
@@ -205,7 +205,8 @@ namespace HugeLauncher
             frmTutorial tutorial = new frmTutorial()
             {
                 TopMost = true,
-                Location = new Point(p.X + 9, p.Y + 55)
+                Location = new Point(p.X + 9, p.Y + 55),
+                Size = new Size(instance.Width - 20, instance.Height - 65)
             };
             tutorial.Show();
             instance.LocationChanged += (sender, e) =>
@@ -230,12 +231,18 @@ namespace HugeLauncher
         {
             int index = comboBox1.SelectedIndex;
             string path = GetFolderPathVer(index, type);
-            JObject obj = type == PackType.Client ? clientVersions : serverVersions;
-            JEnumerable<JToken> dl = obj["Versions"].Children().ElementAt(index)["Files"].Children();
-            foreach (JToken token in dl)
+            JToken verObj = GetVersion(index, type);
+            JEnumerable<JToken> dl = verObj["Files"].Children();
+
+            //Set maximums
+            pbFileProgress.Maximum = 100; //verObj["TotalSize"].ToObject<int>();
+
+            this.StartDownload(dl.Select(token =>
             {
-                //https://stackoverflow.com/questions/9459225/asynchronous-file-download-with-progress-bar
-            }
+                return new DownloadPath(new Uri(token["FileUrl"].ToObject<string>()), Path.Combine(path, token["FileRelPath"].ToObject<string>()));
+            }));
+
+            //https://stackoverflow.com/questions/9459225/asynchronous-file-download-with-progress-bar
         }
 
         private void mostrarTutorialInicialToolStripMenuItem_Click(object sender, EventArgs e)
@@ -246,6 +253,7 @@ namespace HugeLauncher
         public static bool IsVersionSetup(int index, PackType type)
         {
             string folder = GetFolderPathVer(index, type);
+            //Console.WriteLine("Foool: {0}", folder);
             return Directory.Exists(folder) && !folder.IsDirectoryEmpty();
         }
 
@@ -258,6 +266,29 @@ namespace HugeLauncher
         {
             JObject obj = type == PackType.Client ? clientVersions : serverVersions;
             return obj["Versions"].Children().ElementAt(index)["Version"].ToObject<string>();
+        }
+
+        private static JToken GetVersion(int index, PackType type)
+        {
+            JObject obj = type == PackType.Client ? clientVersions : serverVersions;
+            return obj["Versions"].Children().ElementAt(index);
+        }
+
+        private void RutineVersionInstalled(PackType type)
+        {
+            Button btnRunins = type == PackType.Client ? btnRuninsClient : btnRunisServer,
+                   btnDel = type == PackType.Client ? btnDelClient : btnDelServer;
+
+            if (IsVersionSetup(comboBox1.SelectedIndex, type))
+            {
+                btnRunins.Text = "Abrir Launcher";
+                runClient = true;
+            }
+            else
+            {
+                btnRunins.Text = "Instalar versión";
+                btnDel.Visible = false;
+            }
         }
     }
 
@@ -274,5 +305,157 @@ namespace HugeLauncher
             ClientData = cli;
             ServerData = ser;
         }
+    }
+
+    public class DownloadPath
+    {
+        public Uri Url;
+        public string Path;
+
+        public DownloadPath(Uri u, string p)
+        {
+            Url = u;
+            Path = p;
+        }
+    }
+
+    public static class DownloadManager
+    {
+        private static Queue<DownloadPath> _downloads = new Queue<DownloadPath>();
+        private static Form form;
+
+        private static Label _lblFProg;
+
+        private static Label lblFileProgress
+        {
+            get
+            {
+                if (_lblFProg == null) _lblFProg = (Label) form.Controls.Find("lblFileProgress", true)[0];
+                return _lblFProg;
+            }
+        }
+
+        private static ProgressBar _pbFProg;
+
+        private static ProgressBar pbFileProgress
+        {
+            get
+            {
+                if (_pbFProg == null) _pbFProg = (ProgressBar) form.Controls.Find("pbFileProgress", true)[0];
+                return _pbFProg;
+            }
+        }
+
+        public static void StartDownload(this Form frm, IEnumerable<DownloadPath> downloads)
+        {
+            form = frm;
+
+            foreach (DownloadPath download in downloads)
+                _downloads.Enqueue(download);
+
+            NextDownload(_downloads.Dequeue());
+        }
+
+        private static void NextDownload(DownloadPath dl)
+        {
+            Thread thread = new Thread(() =>
+            {
+                string fol = Path.GetDirectoryName(dl.Path);
+                if (!Directory.Exists(fol))
+                    Directory.CreateDirectory(fol);
+
+                using (WebClient client = new WebClient())
+                {
+                    client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
+                    client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
+                    client.DownloadFileAsync(dl.Url, dl.Path);
+                }
+            });
+            thread.Start();
+        }
+
+        private static void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            form.BeginInvoke((MethodInvoker) delegate
+            {
+                try
+                {
+                    double percentage = (double) e.BytesReceived / e.TotalBytesToReceive * 100;
+                    lblFileProgress.Text = string.Format("Downloaded {0} of {1} ({2:F2}%) ", e.BytesReceived.BytesToString(), e.TotalBytesToReceive.BytesToString(), percentage);// + e.BytesReceived + " of " + e.TotalBytesToReceive ;
+                    pbFileProgress.Value = (int) Math.Truncate(percentage);
+                }
+                catch
+                {
+                    Console.WriteLine("Exception occurred!");
+                }
+            });
+        }
+
+        private static void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            form.BeginInvoke((MethodInvoker) delegate
+            {
+                NextDownload(_downloads.Dequeue());
+            });
+        }
+
+        /*private static void downloadFile(IEnumerable<string> urls)
+        {
+            foreach (var url in urls)
+            {
+                _downloadUrls.Enqueue(url);
+            }
+
+            // Starts the download
+            btnGetDownload.Text = "Downloading...";
+            btnGetDownload.Enabled = false;
+            progressBar1.Visible = true;
+            lblFileName.Visible = true;
+
+            DownloadFile();
+        }
+
+        private void DownloadFile()
+        {
+            if (_downloadUrls.Any())
+            {
+                WebClient client = new WebClient();
+                client.DownloadProgressChanged += client_DownloadProgressChanged;
+                client.DownloadFileCompleted += client_DownloadFileCompleted;
+
+                var url = _downloadUrls.Dequeue();
+                string FileName = url.Substring(url.LastIndexOf("/") + 1,
+                            (url.Length - url.LastIndexOf("/") - 1));
+
+                client.DownloadFileAsync(new Uri(url), "C:\\Test4\\" + FileName);
+                lblFileName.Text = url;
+                return;
+            }
+
+            // End of the download
+            btnGetDownload.Text = "Download Complete";
+        }
+
+        private void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                // handle error scenario
+                throw e.Error;
+            }
+            if (e.Cancelled)
+            {
+                // handle cancelled scenario
+            }
+            DownloadFile();
+        }
+
+        private void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            double bytesIn = double.Parse(e.BytesReceived.ToString());
+            double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
+            double percentage = bytesIn / totalBytes * 100;
+            progressBar1.Value = int.Parse(Math.Truncate(percentage).ToString());
+        }*/
     }
 }

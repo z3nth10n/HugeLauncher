@@ -40,16 +40,16 @@
             this.btnRunisServer = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.pbFileDownload = new System.Windows.Forms.ProgressBar();
-            this.label3 = new System.Windows.Forms.Label();
-            this.pbTotalDownload = new System.Windows.Forms.ProgressBar();
-            this.label4 = new System.Windows.Forms.Label();
+            this.lblFileProgress = new System.Windows.Forms.Label();
+            this.pbFileProgress = new System.Windows.Forms.ProgressBar();
+            this.lblTotalProgress = new System.Windows.Forms.Label();
+            this.pbTotalProgress = new System.Windows.Forms.ProgressBar();
+            this.lblMetrics = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.opcionesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.establecerRutaDeInstalaciónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.mostrarTutorialInicialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -58,18 +58,18 @@
             // 
             // tabControl1
             // 
+            resources.ApplyResources(this.tabControl1, "tabControl1");
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            resources.ApplyResources(this.tabControl1, "tabControl1");
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             // 
             // tabPage1
             // 
+            resources.ApplyResources(this.tabPage1, "tabPage1");
             this.tabPage1.Controls.Add(this.label5);
             this.tabPage1.Controls.Add(this.btnDelClient);
             this.tabPage1.Controls.Add(this.btnRuninsClient);
-            resources.ApplyResources(this.tabPage1, "tabPage1");
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
@@ -94,10 +94,10 @@
             // 
             // tabPage2
             // 
+            resources.ApplyResources(this.tabPage2, "tabPage2");
             this.tabPage2.Controls.Add(this.label6);
             this.tabPage2.Controls.Add(this.btnDelServer);
             this.tabPage2.Controls.Add(this.btnRunisServer);
-            resources.ApplyResources(this.tabPage2, "tabPage2");
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
@@ -122,8 +122,8 @@
             // 
             // comboBox1
             // 
-            this.comboBox1.FormattingEnabled = true;
             resources.ApplyResources(this.comboBox1, "comboBox1");
+            this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Name = "comboBox1";
             // 
             // label1
@@ -131,68 +131,72 @@
             resources.ApplyResources(this.label1, "label1");
             this.label1.Name = "label1";
             // 
-            // label2
+            // lblFileProgress
             // 
-            resources.ApplyResources(this.label2, "label2");
-            this.label2.Name = "label2";
+            resources.ApplyResources(this.lblFileProgress, "lblFileProgress");
+            this.lblFileProgress.Name = "lblFileProgress";
             // 
-            // pbFileDownload
+            // pbFileProgress
             // 
-            resources.ApplyResources(this.pbFileDownload, "pbFileDownload");
-            this.pbFileDownload.Name = "pbFileDownload";
+            resources.ApplyResources(this.pbFileProgress, "pbFileProgress");
+            this.pbFileProgress.Name = "pbFileProgress";
             // 
-            // label3
+            // lblTotalProgress
             // 
-            resources.ApplyResources(this.label3, "label3");
-            this.label3.Name = "label3";
+            resources.ApplyResources(this.lblTotalProgress, "lblTotalProgress");
+            this.lblTotalProgress.Name = "lblTotalProgress";
             // 
-            // pbTotalDownload
+            // pbTotalProgress
             // 
-            resources.ApplyResources(this.pbTotalDownload, "pbTotalDownload");
-            this.pbTotalDownload.Name = "pbTotalDownload";
+            resources.ApplyResources(this.pbTotalProgress, "pbTotalProgress");
+            this.pbTotalProgress.Name = "pbTotalProgress";
             // 
-            // label4
+            // lblMetrics
             // 
-            resources.ApplyResources(this.label4, "label4");
-            this.label4.Name = "label4";
+            resources.ApplyResources(this.lblMetrics, "lblMetrics");
+            this.lblMetrics.Name = "lblMetrics";
             // 
             // menuStrip1
             // 
+            resources.ApplyResources(this.menuStrip1, "menuStrip1");
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.opcionesToolStripMenuItem});
-            resources.ApplyResources(this.menuStrip1, "menuStrip1");
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
             // 
             // opcionesToolStripMenuItem
             // 
+            resources.ApplyResources(this.opcionesToolStripMenuItem, "opcionesToolStripMenuItem");
             this.opcionesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.establecerRutaDeInstalaciónToolStripMenuItem,
             this.mostrarTutorialInicialToolStripMenuItem});
             this.opcionesToolStripMenuItem.Name = "opcionesToolStripMenuItem";
-            resources.ApplyResources(this.opcionesToolStripMenuItem, "opcionesToolStripMenuItem");
             // 
             // establecerRutaDeInstalaciónToolStripMenuItem
             // 
-            this.establecerRutaDeInstalaciónToolStripMenuItem.Name = "establecerRutaDeInstalaciónToolStripMenuItem";
             resources.ApplyResources(this.establecerRutaDeInstalaciónToolStripMenuItem, "establecerRutaDeInstalaciónToolStripMenuItem");
+            this.establecerRutaDeInstalaciónToolStripMenuItem.Name = "establecerRutaDeInstalaciónToolStripMenuItem";
             this.establecerRutaDeInstalaciónToolStripMenuItem.Click += new System.EventHandler(this.establecerRutaDeInstalaciónToolStripMenuItem_Click);
             // 
             // mostrarTutorialInicialToolStripMenuItem
             // 
-            this.mostrarTutorialInicialToolStripMenuItem.Name = "mostrarTutorialInicialToolStripMenuItem";
             resources.ApplyResources(this.mostrarTutorialInicialToolStripMenuItem, "mostrarTutorialInicialToolStripMenuItem");
+            this.mostrarTutorialInicialToolStripMenuItem.Name = "mostrarTutorialInicialToolStripMenuItem";
             this.mostrarTutorialInicialToolStripMenuItem.Click += new System.EventHandler(this.mostrarTutorialInicialToolStripMenuItem_Click);
+            // 
+            // folderBrowserDialog1
+            // 
+            resources.ApplyResources(this.folderBrowserDialog1, "folderBrowserDialog1");
             // 
             // frmMain
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.pbTotalDownload);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.pbFileDownload);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.lblMetrics);
+            this.Controls.Add(this.pbTotalProgress);
+            this.Controls.Add(this.lblTotalProgress);
+            this.Controls.Add(this.pbFileProgress);
+            this.Controls.Add(this.lblFileProgress);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tabControl1);
@@ -222,11 +226,11 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ProgressBar pbFileDownload;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ProgressBar pbTotalDownload;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblFileProgress;
+        private System.Windows.Forms.ProgressBar pbFileProgress;
+        private System.Windows.Forms.Label lblTotalProgress;
+        private System.Windows.Forms.ProgressBar pbTotalProgress;
+        private System.Windows.Forms.Label lblMetrics;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button btnDelClient;
         private System.Windows.Forms.Button btnRuninsClient;
