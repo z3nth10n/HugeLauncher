@@ -6,7 +6,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -16,6 +15,7 @@ using System.Threading;
 using System.Windows.Forms;
 using LWeb = Lerp2Web.Lerp2Web;
 using WebAPI = Lerp2Web.API;
+using Timer = System.Windows.Forms.Timer;
 
 namespace HugeLauncher
 {
@@ -189,14 +189,53 @@ namespace HugeLauncher
         {
             Console.WriteLine("frmMain_Load");
 
-            //Check the first execution
-            if (WebAPI.InitializatedConfigSession)
+            instance.LocationChanged += (sender1, e1) =>
             {
-                //Do special thing here for this session??
-                //Yep, we have to say to the user in several msgbox what to do here...
-                //For example that they can change the path of execution by default
-                StartingTutorial();
-            }
+                Point p = instance.Location;
+                if (frmTutorial.instance != null && frmTutorial.instance.Visible) frmTutorial.instance.Location = frmTutorial.instance.Position;
+                if (frmDescription.instance != null && frmDescription.instance.Visible) frmDescription.instance.Location = frmDescription.instance.Position;
+            };
+
+            instance.Shown += (sender1, e1) =>
+            {
+                Console.WriteLine("frmMain_VisibledChanged: " + instance.Visible);
+
+                frmTutorial tut = frmTutorial.instance;
+                frmDescription desc = frmDescription.instance;
+
+                if (tut != null)
+                {
+                    tut.TopMost = instance.Visible;
+                    tut.Visible = instance.Visible;
+                }
+
+                if (desc != null)
+                {
+                    desc.TopMost = instance.Visible;
+                    desc.Visible = instance.Visible;
+                }
+            };
+
+            /*Timer timer = new Timer();
+            timer.Interval = 1000;
+            timer.Tick += (sender1, e1) =>
+            {
+                Console.WriteLine("Visible: "+instance.ChildReallyVisible(instance.Controls.Find("comboBox1", true)[0]));
+            };
+            timer.Start();*/
+
+            //Check the first execution
+
+            //Do special thing here for this session??
+            //Yep, we have to say to the user in several msgbox what to do here...
+            //For example that they can change the path of execution by default
+
+            //Actualizar aqui la posicion para arreglar eso...
+
+            if (WebAPI.InitializatedConfigSession)
+                frmTutorial.Init(instance);
+            else
+                frmDescription.Init(instance);
 
             //Create a folder for the modpacks & data & launcher
             if (!Directory.Exists(ModpackFolderPath))
@@ -239,25 +278,6 @@ namespace HugeLauncher
             }
         }
 
-        private static void StartingTutorial()
-        { //Inject a frame form
-            //string title = "Starting tutorial";
-            //MessageBox.Show(title, "Welcome to HugeLauncher! With this launcher you");
-            Point p = instance.Location;
-            frmTutorial tutorial = new frmTutorial()
-            {
-                TopMost = true,
-                Location = new Point(p.X + 9, p.Y + 55),
-                Size = new Size(instance.Width - 20, instance.Height - 65)
-            };
-            tutorial.Show();
-            instance.LocationChanged += (sender, e) =>
-            {
-                Point p1 = instance.Location;
-                tutorial.Location = new Point(p1.X + 9, p1.Y + 55);
-            };
-        }
-
         public static void LoadModpackData()
         {
             modpackData = JsonConvert.DeserializeObject<ModpackData[]>(File.ReadAllText(DataFilePath)).ToList();
@@ -272,6 +292,8 @@ namespace HugeLauncher
         private void DownloadData(PackType type)
         {
             downloadingData = true;
+
+            frmDescription.instance.Hide();
 
             int index = comboBox1.SelectedIndex;
             string path = GetFolderPathVer(index, type);
@@ -297,7 +319,7 @@ namespace HugeLauncher
 
         private void mostrarTutorialInicialToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            StartingTutorial();
+            frmTutorial.Init(this);
         }
 
         public static bool IsVersionSetup(int index, PackType type)
@@ -463,6 +485,7 @@ namespace HugeLauncher
 
         public static void CancelDownload()
         {
+            frmDescription.instance.Show();
             cancellingDownload = true;
         }
 
@@ -501,7 +524,7 @@ namespace HugeLauncher
 
                         double currentRate = AvByteValue / loop;
 
-                        lblMetrics.Text = string.Format("ETA: {0:F0} s; Download rate: {1}/s", currentRate > 0 ? TimeSpan.FromSeconds((int) Math.Truncate(TotalBytes / currentRate)).ToString(@"hh\:mm\:ss") : "Inf", currentRate.BytesToString());
+                        lblMetrics.Text = string.Format("ETA: {0}; Download rate: {1}/s", currentRate > 0 ? TimeSpan.FromSeconds((int) Math.Truncate(TotalBytes / currentRate)).ToString(@"hh\h\ mm\m\ ss\s") : "Inf", currentRate.BytesToString());
                     };
                     timer.Interval = 1000;
                     timer.Start();
@@ -545,8 +568,6 @@ namespace HugeLauncher
                 if (dl != null) NextDownload(dl);
                 else
                 {
-                    //if (watch != null) watch.Stop(); //Finish counting...
-
                     //Check if files are complete??
                     if (packType == PackType.Client)
                         frmMain.runClient = true;

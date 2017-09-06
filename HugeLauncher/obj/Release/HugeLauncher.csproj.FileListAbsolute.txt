@@ -21,3 +21,4 @@ D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLau
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\en\HugeLauncher.resources.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.frmMain.en.resources
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\en\HugeLauncher.resources.dll
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.frmDescription.resources
