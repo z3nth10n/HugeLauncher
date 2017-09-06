@@ -379,8 +379,11 @@ namespace HugeLauncher
         private static WebClient client;
         private static PackType packType;
         private static long TotalBytes;
-        private static double LastByteValue;
-        private static Stopwatch watch;
+        private static double LastByteValue, CurByteValue, AvByteValue;
+        private static ulong loop;
+
+        //private static Stopwatch watch;
+        private static System.Windows.Forms.Timer timer;
 
         private static int CurFilesCount
         {
@@ -486,41 +489,51 @@ namespace HugeLauncher
         {
             form.BeginInvoke((MethodInvoker) delegate
             {
-                //try
-                //{
-                if (cancellingDownload)
+                if (timer == null)
                 {
-                    client.DownloadProgressChanged -= null;
-                    client.DownloadFileCompleted -= null;
-                    client.Dispose();
-                    _downloads = null;
-                    return;
+                    timer = new System.Windows.Forms.Timer();
+                    timer.Tick += (sender1, e1) =>
+                    {
+                        double downloadRate = CurByteValue - LastByteValue;
+                        LastByteValue = CurByteValue;
+                        AvByteValue += Math.Abs(downloadRate);
+                        ++loop;
+
+                        double currentRate = AvByteValue / loop;
+
+                        lblMetrics.Text = string.Format("ETA: {0:F0} s; Download rate: {1}/s", currentRate > 0 ? TimeSpan.FromSeconds((int) Math.Truncate(TotalBytes / currentRate)).ToString(@"hh\:mm\:ss") : "Inf", currentRate.BytesToString());
+                    };
+                    timer.Interval = 1000;
+                    timer.Start();
                 }
-                double phasePercentage = (double) CurFilesCount / FileLength * 100,
-                       totalPercentage = phasePercentage * 1,
-                       percentage = (double) e.BytesReceived / e.TotalBytesToReceive * 100;
 
-                string fileName = Path.GetFileName(curDownload.Path);
+                try
+                {
+                    if (cancellingDownload)
+                    {
+                        client.DownloadProgressChanged -= null;
+                        client.DownloadFileCompleted -= null;
+                        client.Dispose();
+                        _downloads = null;
+                        return;
+                    }
+                    double phasePercentage = (double) CurFilesCount / FileLength * 100,
+                           totalPercentage = phasePercentage * 1,
+                           percentage = (double) e.BytesReceived / e.TotalBytesToReceive * 100;
 
-                lblFileProgress.Text = string.Format("Downloaded {0} of {1} ({2:F2}%) ", e.BytesReceived.BytesToString(), e.TotalBytesToReceive.BytesToString(), percentage);
-                pbFileProgress.Value = (int) Math.Truncate(percentage);
-                lblTotalProgress.Text = string.Format("Fase {0}: {1} de {2} archivos descargados ({3:F2}%)\nArchivo: {4} (Total: {5:F2}%)", "1", CurFilesCount, FileLength, phasePercentage, GetFileStr(fileName), totalPercentage);
-                pbTotalProgress.Value = (int) Math.Truncate(totalPercentage);
+                    string fileName = Path.GetFileName(curDownload.Path);
 
-                if (watch != null) watch.Stop();
+                    lblFileProgress.Text = string.Format("Downloaded {0} of {1} ({2:F2}%) ", e.BytesReceived.BytesToString(), e.TotalBytesToReceive.BytesToString(), percentage);
+                    pbFileProgress.Value = (int) Math.Truncate(percentage);
+                    lblTotalProgress.Text = string.Format("Fase {0}: {1} de {2} archivos descargados ({3:F2}%)\nArchivo: {4} (Total: {5:F2}%)", "1", CurFilesCount, FileLength, phasePercentage, GetFileStr(fileName), totalPercentage);
+                    pbTotalProgress.Value = (int) Math.Truncate(totalPercentage);
 
-                double downloadRate = watch != null ? (e.BytesReceived - LastByteValue) / ((double) watch.ElapsedMilliseconds / 1000) : 0;
-
-                lblMetrics.Text = string.Format("ETA: {0:F0} s; Download rate: {1}/s", downloadRate > 0 ? ((int) Math.Truncate(TotalBytes / downloadRate)).ToString() : "Inf", downloadRate.BytesToString());
-
-                LastByteValue = e.BytesReceived;
-
-                watch = Stopwatch.StartNew();
-                /*}
+                    CurByteValue = e.BytesReceived;
+                }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Exception occurred! Message:\n\n{0}", ex.ToString());
-                }*/
+                }
             });
         }
 
@@ -528,11 +541,11 @@ namespace HugeLauncher
         {
             form.BeginInvoke((MethodInvoker) delegate
             {
-                DownloadPath dl = _downloads.Dequeue();
+                DownloadPath dl = _downloads.Count > 0 ? _downloads.Dequeue() : null;
                 if (dl != null) NextDownload(dl);
                 else
                 {
-                    if (watch != null) watch.Stop(); //Finish counting...
+                    //if (watch != null) watch.Stop(); //Finish counting...
 
                     //Check if files are complete??
                     if (packType == PackType.Client)
