@@ -1,4 +1,5 @@
-﻿using LiteLerped_WF_API.Classes;
+﻿using HugeLauncher.Properties;
+using LiteLerped_WF_API.Classes;
 using System;
 using System.IO;
 using System.Linq;
@@ -21,6 +22,8 @@ namespace HugeLauncher
             Application.SetCompatibleTextRenderingDefault(false);
             LiteProgram.Run("hugelauncher_", new frmMain(), () =>
             {
+                Settings.Default.StartupPath = frmMain.AppPath;
+                Settings.Default.Save();
             });
         }
     }

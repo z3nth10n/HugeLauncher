@@ -1,10 +1,12 @@
-﻿using Lerp2Web;
+﻿using HugeLauncher.Properties;
+using Lerp2Web;
 using LiteLerped_WF_API.Controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -137,6 +139,14 @@ namespace HugeLauncher
             }
         }
 
+        public static string StartUpPath
+        {
+            get
+            {
+                return Settings.Default.StartupPath;
+            }
+        }
+
         private void btnRuninsClient_Click(object sender, EventArgs e)
         {
             if (runClient)
@@ -220,6 +230,13 @@ namespace HugeLauncher
 
         private void establecerRutaDeInstalaciónToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            folderBrowserDialog1.SelectedPath = AppPath;
+            DialogResult res = folderBrowserDialog1.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+                Settings.Default.StartupPath = folderBrowserDialog1.SelectedPath;
+                Settings.Default.Save();
+            }
         }
 
         private static void StartingTutorial()
@@ -268,11 +285,12 @@ namespace HugeLauncher
 
             //Set maximums
             pbFileProgress.Maximum = 100; //verObj["TotalSize"].ToObject<int>();
+            pbTotalProgress.Maximum = 100;
 
             this.StartDownload(dl.Select(token =>
             {
                 return new DownloadPath(new Uri(token["FileUrl"].ToObject<string>()), Path.Combine(path, token["FileRelPath"].ToObject<string>()));
-            }));
+            }), type, verObj["TotalSize"].ToObject<long>());
 
             //https://stackoverflow.com/questions/9459225/asynchronous-file-download-with-progress-bar
         }
@@ -360,6 +378,9 @@ namespace HugeLauncher
         private static bool cancellingDownload;
         private static WebClient client;
         private static PackType packType;
+        private static long TotalBytes;
+        private static double LastByteValue;
+        private static Stopwatch watch;
 
         private static int CurFilesCount
         {
@@ -413,11 +434,23 @@ namespace HugeLauncher
             }
         }
 
-        public static void StartDownload(this Form frm, IEnumerable<DownloadPath> downloads, PackType type)
+        private static Label _lblMetrics;
+
+        private static Label lblMetrics
+        {
+            get
+            {
+                if (_lblMetrics == null) _lblMetrics = (Label) form.Controls.Find("lblMetrics", true)[0];
+                return _lblMetrics;
+            }
+        }
+
+        public static void StartDownload(this Form frm, IEnumerable<DownloadPath> downloads, PackType type, long totalBytes)
         {
             form = frm;
             FileLength = downloads.Count();
             packType = type;
+            TotalBytes = totalBytes;
 
             foreach (DownloadPath download in downloads)
                 _downloads.Enqueue(download);
@@ -453,29 +486,41 @@ namespace HugeLauncher
         {
             form.BeginInvoke((MethodInvoker) delegate
             {
-                try
+                //try
+                //{
+                if (cancellingDownload)
                 {
-                    if (cancellingDownload)
-                    {
-                        client.DownloadProgressChanged -= null;
-                        client.DownloadFileCompleted -= null;
-                        client.Dispose();
-                        _downloads = null;
-                        return;
-                    }
-                    double phasePercentage = (double) CurFilesCount / FileLength * 100,
-                           totalPercentage = phasePercentage * 1,
-                           percentage = (double) e.BytesReceived / e.TotalBytesToReceive * 100;
-                    string fileName = Path.GetFileName(curDownload.Path);
-                    lblFileProgress.Text = string.Format("Downloaded {0} of {1} ({2:F2}%) ", e.BytesReceived.BytesToString(), e.TotalBytesToReceive.BytesToString(), percentage);
-                    pbFileProgress.Value = (int) Math.Truncate(percentage);
-                    lblTotalProgress.Text = string.Format("Fase {0}: {1} de {2} archivos descargados ({3:F2}%)\nArchivo: {4} (Total: {5:F2}%)", "1", CurFilesCount, FileLength, phasePercentage, GetFileStr(fileName), totalPercentage);
-                    pbTotalProgress.Value = (int) Math.Truncate(totalPercentage);
+                    client.DownloadProgressChanged -= null;
+                    client.DownloadFileCompleted -= null;
+                    client.Dispose();
+                    _downloads = null;
+                    return;
                 }
-                catch
+                double phasePercentage = (double) CurFilesCount / FileLength * 100,
+                       totalPercentage = phasePercentage * 1,
+                       percentage = (double) e.BytesReceived / e.TotalBytesToReceive * 100;
+
+                string fileName = Path.GetFileName(curDownload.Path);
+
+                lblFileProgress.Text = string.Format("Downloaded {0} of {1} ({2:F2}%) ", e.BytesReceived.BytesToString(), e.TotalBytesToReceive.BytesToString(), percentage);
+                pbFileProgress.Value = (int) Math.Truncate(percentage);
+                lblTotalProgress.Text = string.Format("Fase {0}: {1} de {2} archivos descargados ({3:F2}%)\nArchivo: {4} (Total: {5:F2}%)", "1", CurFilesCount, FileLength, phasePercentage, GetFileStr(fileName), totalPercentage);
+                pbTotalProgress.Value = (int) Math.Truncate(totalPercentage);
+
+                if (watch != null) watch.Stop();
+
+                double downloadRate = watch != null ? (e.BytesReceived - LastByteValue) / ((double) watch.ElapsedMilliseconds / 1000) : 0;
+
+                lblMetrics.Text = string.Format("ETA: {0:F0} s; Download rate: {1}/s", downloadRate > 0 ? ((int) Math.Truncate(TotalBytes / downloadRate)).ToString() : "Inf", downloadRate.BytesToString());
+
+                LastByteValue = e.BytesReceived;
+
+                watch = Stopwatch.StartNew();
+                /*}
+                catch (Exception ex)
                 {
-                    Console.WriteLine("Exception occurred!");
-                }
+                    Console.WriteLine("Exception occurred! Message:\n\n{0}", ex.ToString());
+                }*/
             });
         }
 
@@ -487,6 +532,8 @@ namespace HugeLauncher
                 if (dl != null) NextDownload(dl);
                 else
                 {
+                    if (watch != null) watch.Stop(); //Finish counting...
+
                     //Check if files are complete??
                     if (packType == PackType.Client)
                         frmMain.runClient = true;
@@ -500,7 +547,7 @@ namespace HugeLauncher
         private static string GetFileStr(string name)
         {
             string withoutExt = Path.GetFileNameWithoutExtension(name);
-            return withoutExt.Substring(0, 12) + "..." + name.Replace(withoutExt, "");
+            return withoutExt.Length > 12 ? withoutExt.Substring(0, 12) + "..." + name.Replace(withoutExt, "") : name;
         }
     }
 }
