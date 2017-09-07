@@ -16,6 +16,7 @@ using System.Windows.Forms;
 using LWeb = Lerp2Web.Lerp2Web;
 using WebAPI = Lerp2Web.API;
 using Timer = System.Windows.Forms.Timer;
+using HugeLauncher.Controls;
 
 namespace HugeLauncher
 {
@@ -27,7 +28,7 @@ namespace HugeLauncher
 
     public partial class frmMain : LerpedForm
     {
-        public static frmMain instance;
+        public static frmMain mainInstance;
 
         public const string clientDataUrl = "https://gitlab.com/ikillnukes1/HugeCraft-Client/raw/master/HugeCraft_Data.json",
                             serverDataUrl = "https://gitlab.com/ikillnukes1/HugeCraft-Server/raw/master/HugeCraft_Data.json",
@@ -181,7 +182,7 @@ namespace HugeLauncher
 
         public frmMain()
         {
-            instance = this;
+            mainInstance = this;
             InitializeComponent();
         }
 
@@ -189,32 +190,40 @@ namespace HugeLauncher
         {
             Console.WriteLine("frmMain_Load");
 
-            instance.LocationChanged += (sender1, e1) =>
+            mainInstance.LocationChanged += (sender1, e1) =>
             {
-                Point p = instance.Location;
+                //Point p = frmTutorial.instance.Location;
                 if (frmTutorial.instance != null && frmTutorial.instance.Visible) frmTutorial.instance.Location = frmTutorial.instance.Position;
                 if (frmDescription.instance != null && frmDescription.instance.Visible) frmDescription.instance.Location = frmDescription.instance.Position;
             };
 
-            instance.Shown += (sender1, e1) =>
+            /*mainInstance.ActiveChanged += (sender1, state) =>
             {
-                Console.WriteLine("frmMain_VisibledChanged: " + instance.Visible);
-
                 frmTutorial tut = frmTutorial.instance;
                 frmDescription desc = frmDescription.instance;
 
                 if (tut != null)
                 {
-                    tut.TopMost = instance.Visible;
-                    tut.Visible = instance.Visible;
+                    tut.TopMost = state.IsActive;
+                    tut.Visible = state.IsActive;
                 }
 
                 if (desc != null)
                 {
-                    desc.TopMost = instance.Visible;
-                    desc.Visible = instance.Visible;
+                    desc.TopMost = state.IsActive;
+                    desc.Visible = state.IsActive;
                 }
-            };
+            };*/
+
+            /*instance.Deactivate += (s, ee) =>
+            {
+                Console.WriteLine("aaaa");
+            }; //(EventHandler) handler.Clone();
+
+            instance.Activated += (s, ee) =>
+            {
+                Console.WriteLine("bbb");
+            };*/ //handler; // (EventHandler) handler.Clone();
 
             /*Timer timer = new Timer();
             timer.Interval = 1000;
@@ -233,9 +242,9 @@ namespace HugeLauncher
             //Actualizar aqui la posicion para arreglar eso...
 
             if (WebAPI.InitializatedConfigSession)
-                frmTutorial.Init(instance);
+                frmTutorial.Init(mainInstance);
             else
-                frmDescription.Init(instance);
+                frmDescription.Init(mainInstance);
 
             //Create a folder for the modpacks & data & launcher
             if (!Directory.Exists(ModpackFolderPath))

@@ -1,47 +1,29 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
+﻿using HugeLauncher.Controls;
+using System;
 
 namespace HugeLauncher
 {
-    public partial class frmDescription : Form
+    public partial class frmDescription : SpecialForm
     {
-        internal static bool wasOpened;
         public static frmDescription instance;
-
-        internal Point Position
-        {
-            get
-            {
-                Point p = frmMain.instance.Location;
-                return new Point(p.X + 9, p.Y + 85);
-            }
-        }
+        internal static bool wasOpened;
 
         public frmDescription()
+            : base(85)
         {
             InitializeComponent();
         }
 
         public static void Init(frmMain ins)
         {
-            Point p = ins.Location;
-            instance = new frmDescription()
-            {
-                TopMost = true
-            };
-
-            instance.Show();
-            instance.Shown += (sender, e) =>
-            {
-                instance.Location = instance.Position;
-            };
+            Init(ins, HugeFormType.frmDescription);
         }
 
         private void frmDescription_Load(object sender, EventArgs e)
         {
             wasOpened = true;
             webBrowser1.Url = Program.GetHugeFormUri(HugeFormType.frmDescription);
+            //Hide();
         }
     }
 }

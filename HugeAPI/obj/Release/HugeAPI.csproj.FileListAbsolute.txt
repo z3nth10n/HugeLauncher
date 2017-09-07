@@ -4,4 +4,3 @@ D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\bin\Release\Lerp2Web.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\bin\Release\Lerp2Web.pdb
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\obj\Release\HugeAPI.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\obj\Release\HugeAPI.pdb
-D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\obj\Release\HugeAPI.csprojResolveAssemblyReference.cache

@@ -11,7 +11,7 @@ using LiteProgram = LiteLerped_WF_API.Program;
 
 namespace HugeLauncher
 {
-    internal enum HugeFormType
+    public enum HugeFormType
     {
         frmDescription,
         frmTutorial

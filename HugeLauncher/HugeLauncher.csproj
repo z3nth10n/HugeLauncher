@@ -54,6 +54,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\SpecialForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\SpecialForm.Designer.cs">
+      <DependentUpon>SpecialForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmDescription.cs">
       <SubType>Form</SubType>
     </Compile>

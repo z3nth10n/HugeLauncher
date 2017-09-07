@@ -1,45 +1,28 @@
-﻿using System;
+﻿using HugeLauncher.Controls;
+using System;
 using System.Drawing;
-using System.Windows.Forms;
 
 namespace HugeLauncher
 {
-    public partial class frmTutorial : Form
+    public partial class frmTutorial : SpecialForm
     {
         public static frmTutorial instance;
-        private static frmMain mainIns;
-
-        internal Point Position
-        {
-            get
-            {
-                Point p = frmMain.instance.Location;
-                return new Point(p.X + 9, p.Y + 55);
-            }
-        }
 
         public frmTutorial()
+            : base(55)
         {
             InitializeComponent();
+            Shown += (sender, e) =>
+            {
+                Size = new Size(mainIns.Width - 20, mainIns.Height - 65);
+            };
+            Program.FixHeight(this);
         }
 
         public static void Init(frmMain ins)
         {
-            instance = new frmTutorial()
-            {
-                TopMost = true,
-                Size = new Size(ins.Width - 20, ins.Height - 65) //Arreglar el height y top de sus controles
-            };
-
-            Program.FixHeight(instance);
-
-            instance.Show();
-            instance.Shown += (sender, e) =>
-            {
-                instance.Location = instance.Position;
-            };
-
-            mainIns = ins;
+            //Console.WriteLine(new System.Diagnostics.StackTrace().ToString());
+            Init(ins, HugeFormType.frmTutorial);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -47,7 +30,7 @@ namespace HugeLauncher
             TopMost = false;
             Hide();
             if (!frmDescription.wasOpened)
-                frmDescription.Init(mainIns);
+                Init(mainIns, HugeFormType.frmDescription);
         }
 
         private void frmTutorial_Load(object sender, EventArgs e)
