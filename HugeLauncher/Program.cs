@@ -1,8 +1,11 @@
-﻿using HugeLauncher.Properties;
+﻿using HugeLauncher.Controls;
+using HugeLauncher.Properties;
 using Lerp2Web;
 using LiteLerped_WF_API.Classes;
 using System;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -11,11 +14,11 @@ using LiteProgram = LiteLerped_WF_API.Program;
 
 namespace HugeLauncher
 {
-    public enum HugeFormType
+    /*public enum HugeFormType
     {
         frmDescription,
         frmTutorial
-    }
+    }*/
 
     internal static class Program
     {
@@ -44,36 +47,27 @@ namespace HugeLauncher
             });
         }
 
-        private static string GetHugeFormName(HugeFormType type)
+        private static string GetHugeFormName(SpecialForm frm)
         {
-            switch (type)
+            switch (frm.GetType().Name)
             {
-                case HugeFormType.frmDescription:
+                case "frmDescription":
                     return "get-desc";
 
-                case HugeFormType.frmTutorial:
+                case "frmTutorial":
                     return "get-tutorial";
             }
             return "";
         }
 
-        internal static Uri GetHugeFormUri(HugeFormType type)
+        internal static Uri GetHugeFormUri(SpecialForm frm)
         {
             NameValueCollection col = new NameValueCollection()
             {
-                { "action", GetHugeFormName(type) },
+                { "action", GetHugeFormName(frm) },
                 { "lang", string.Format("{0,-3}", Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName) }
             };
             return string.Concat(WebUrl, "Core.php").GetBuildedUri(col);
-        }
-
-        internal static void FixHeight<T>(T frm) where T : Form
-        {
-            Control webBrowser = frm.Controls.Find("webBrowser1", true)[0],
-                    button = frm.Controls.Find("button1", true)[0];
-
-            webBrowser.Height = frm.Height - 41;
-            button.Top = frm.Height - 41 - 7;
         }
     }
 

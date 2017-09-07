@@ -1,5 +1,6 @@
 ﻿using HugeLauncher.Controls;
 using System;
+using System.Drawing;
 
 namespace HugeLauncher
 {
@@ -9,21 +10,21 @@ namespace HugeLauncher
         internal static bool wasOpened;
 
         public frmDescription()
-            : base(85)
+            : base(new Point(0, 25), new Size(0, 190))
         {
             InitializeComponent();
         }
 
         public static void Init(frmMain ins)
         {
-            Init(ins, HugeFormType.frmDescription);
+            mainIns = ins;
+            Init(new frmDescription());
         }
 
         private void frmDescription_Load(object sender, EventArgs e)
         {
             wasOpened = true;
-            webBrowser1.Url = Program.GetHugeFormUri(HugeFormType.frmDescription);
-            //Hide();
+            webBrowser1.Navigate(Program.GetHugeFormUri(this));
         }
     }
 }

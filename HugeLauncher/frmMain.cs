@@ -6,7 +6,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -16,7 +15,7 @@ using System.Windows.Forms;
 using LWeb = Lerp2Web.Lerp2Web;
 using WebAPI = Lerp2Web.API;
 using Timer = System.Windows.Forms.Timer;
-using HugeLauncher.Controls;
+using System.Text.RegularExpressions;
 
 namespace HugeLauncher
 {
@@ -32,6 +31,8 @@ namespace HugeLauncher
 
         public const string clientDataUrl = "https://gitlab.com/ikillnukes1/HugeCraft-Client/raw/master/HugeCraft_Data.json",
                             serverDataUrl = "https://gitlab.com/ikillnukes1/HugeCraft-Server/raw/master/HugeCraft_Data.json",
+                            TLauncherData = "https://1drv.ms/u/s!Ajlvp9AoY-eJhqJOpFkCpX42mYJgJA",
+                            TLauncherConfig = "https://1drv.ms/u/s!Ajlvp9AoY-eJhqJNBWjyioEA9_Hd8Q",
                             ModpackName = "HugeCraft";
 
         private static JObject _clientVers;
@@ -148,6 +149,14 @@ namespace HugeLauncher
             }
         }
 
+        public static string MCLPath
+        {
+            get
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".tlauncher", "mcl.properties");
+            }
+        }
+
         private void btnRuninsClient_Click(object sender, EventArgs e)
         {
             if (runClient)
@@ -190,12 +199,18 @@ namespace HugeLauncher
         {
             Console.WriteLine("frmMain_Load");
 
-            mainInstance.LocationChanged += (sender1, e1) =>
+            //foreach (var header in client.ResponseHeaders)
+            //    Console.WriteLine(header.ToString());
+
+            //Int64 bytes_total = Convert.ToInt64(client.ResponseHeaders["Content-Length"]);
+            //MessageBox.Show(bytes_total.ToString() + " Bytes");
+
+            /*mainInstance.LocationChanged += (sender1, e1) =>
             {
                 //Point p = frmTutorial.instance.Location;
                 if (frmTutorial.instance != null && frmTutorial.instance.Visible) frmTutorial.instance.Location = frmTutorial.instance.Position;
                 if (frmDescription.instance != null && frmDescription.instance.Visible) frmDescription.instance.Location = frmDescription.instance.Position;
-            };
+            };*/
 
             /*mainInstance.ActiveChanged += (sender1, state) =>
             {
@@ -234,12 +249,6 @@ namespace HugeLauncher
             timer.Start();*/
 
             //Check the first execution
-
-            //Do special thing here for this session??
-            //Yep, we have to say to the user in several msgbox what to do here...
-            //For example that they can change the path of execution by default
-
-            //Actualizar aqui la posicion para arreglar eso...
 
             if (WebAPI.InitializatedConfigSession)
                 frmTutorial.Init(mainInstance);
@@ -318,23 +327,60 @@ namespace HugeLauncher
             pbFileProgress.Maximum = 100; //verObj["TotalSize"].ToObject<int>();
             pbTotalProgress.Maximum = 100;
 
-            this.StartDownload(dl.Select(token =>
+            PhaseManager.PhaseCompleted += (i) =>
+            {
+                switch (i)
+                { //Do something special when...
+                    case 0: //... Modpack downloaded
+                        break;
+
+                    case 1: //... TLauncher Files downloaded
+                        break;
+
+                    case 2: //... TLauncher Config downloaded
+                        ModifyMCLProperties(LauncherFolderPath);
+                        break;
+                }
+            };
+
+            PhaseManager phase = new PhaseManager(type,
+                new DownloadPack(verObj["TotalSize"].ToObject<long>(),
+                    dl.Select(token =>
+                            {
+                                return new DownloadPath(new Uri(token["FileUrl"].ToObject<string>()), Path.Combine(path, token["FileRelPath"].ToObject<string>()));
+                            })
+                    ),
+                new DownloadPack(TLauncherData, LauncherFolderPath));
+
+            //Check if appdata folder exists and if not add download and then do the following or if it exists modify the value from the config to another one
+
+            if (!File.Exists(MCLPath))
+                PhaseManager.instance.AddDownload(new DownloadPack(TLauncherConfig, Path.GetDirectoryName(MCLPath)));
+            else
+                ModifyMCLProperties(LauncherFolderPath);
+
+            /*this.StartDownload(dl.Select(token =>
             {
                 return new DownloadPath(new Uri(token["FileUrl"].ToObject<string>()), Path.Combine(path, token["FileRelPath"].ToObject<string>()));
-            }), type, verObj["TotalSize"].ToObject<long>());
+            }), type, verObj["TotalSize"].ToObject<long>());*/
+        }
 
-            //https://stackoverflow.com/questions/9459225/asynchronous-file-download-with-progress-bar
+        private void ModifyMCLProperties(string path)
+        {
+            string filecontent = File.ReadAllText(MCLPath),
+                   content = Regex.Replace(filecontent, "minecraft.gamedir=.+?\n", string.Format("minecraft.gamedir={0}" + Environment.NewLine, path.Replace(":", @"\:").Replace(@"\", @"\\")));
+            File.WriteAllText(MCLPath, filecontent);
         }
 
         private void mostrarTutorialInicialToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmTutorial.Init(this);
+            //frmDescription.instance.Hide();
         }
 
         public static bool IsVersionSetup(int index, PackType type)
         {
             string folder = GetFolderPathVer(index, type);
-            //Console.WriteLine("Foool: {0}", folder);
             return Directory.Exists(folder) && !folder.IsDirectoryEmpty();
         }
 
@@ -402,6 +448,10 @@ namespace HugeLauncher
 
     public static class DownloadManager
     {
+        public delegate void CustomEventHandler(bool completed);
+
+        public static event CustomEventHandler DownloadCompleted;
+
         private static int FileLength;
         private static Queue<DownloadPath> _downloads = new Queue<DownloadPath>();
         private static Form form;
@@ -414,7 +464,7 @@ namespace HugeLauncher
         private static ulong loop;
 
         //private static Stopwatch watch;
-        private static System.Windows.Forms.Timer timer;
+        private static Timer timer;
 
         private static int CurFilesCount
         {
@@ -523,7 +573,7 @@ namespace HugeLauncher
             {
                 if (timer == null)
                 {
-                    timer = new System.Windows.Forms.Timer();
+                    timer = new Timer();
                     timer.Tick += (sender1, e1) =>
                     {
                         double downloadRate = CurByteValue - LastByteValue;
@@ -550,7 +600,7 @@ namespace HugeLauncher
                         return;
                     }
                     double phasePercentage = (double) CurFilesCount / FileLength * 100,
-                           totalPercentage = phasePercentage * 1,
+                           totalPercentage = PhaseManager.GetSummedValue(),
                            percentage = (double) e.BytesReceived / e.TotalBytesToReceive * 100;
 
                     string fileName = Path.GetFileName(curDownload.Path);
@@ -584,6 +634,8 @@ namespace HugeLauncher
                         frmMain.runServer = true;
                     frmMain.downloadingData = false;
                 }
+
+                DownloadCompleted(dl == null);
             });
         }
 
@@ -591,6 +643,118 @@ namespace HugeLauncher
         {
             string withoutExt = Path.GetFileNameWithoutExtension(name);
             return withoutExt.Length > 12 ? withoutExt.Substring(0, 12) + "..." + name.Replace(withoutExt, "") : name;
+        }
+    }
+
+    public class PhaseManager
+    {
+        public delegate void CustomEventHandler(int index);
+
+        public static event CustomEventHandler PhaseCompleted;
+
+        private static DownloadPack curPack;
+        private static int packIndex;
+
+        internal static PhaseManager instance;
+        internal static Action<DownloadPack> NextDownload;
+
+        public Queue<DownloadPack> multiPaths;
+        private readonly PackType _Type;
+
+        private PhaseManager()
+        {
+        }
+
+        public PhaseManager(PackType t, params DownloadPack[] dls)
+        {
+            instance = this;
+            _Type = t;
+
+            foreach (DownloadPack dl in dls)
+                multiPaths.Enqueue(dl);
+
+            NextDownload = (dl) =>
+            {
+                DownloadManager.StartDownload(frmMain.mainInstance, dl.col, _Type, dl.TotalBytes);
+            };
+
+            DownloadManager.DownloadCompleted += (comp) =>
+            {
+                if (comp)
+                {
+                    NextDownload?.Invoke(Dequeue());
+                    Console.WriteLine("Download queue finished, starting a new phase!");
+                }
+                else
+                    Console.WriteLine("Finished a download, waiting to until the end.");
+            };
+        }
+
+        public void AddDownload(DownloadPack dl)
+        {
+            multiPaths.Enqueue(dl);
+        }
+
+        public void Download()
+        {
+            NextDownload?.Invoke(Dequeue());
+        }
+
+        public DownloadPack Dequeue()
+        {
+            PhaseCompleted(packIndex);
+            ++packIndex;
+            curPack = multiPaths.Dequeue();
+            return curPack;
+        }
+
+        public static double GetSummedValue()
+        {
+            double ret = 0;
+            for (int i = packIndex; i > 0; --i)
+                ret += GetPhaseValue(i);
+            return ret;
+        }
+
+        internal static double GetPhaseValue(int ind = -1)
+        {
+            DownloadPack dl = ind == -1 ? instance.multiPaths.ElementAt(ind) : curPack;
+            return (double) dl.TotalBytes / DownloadPack.TotalPackSize;
+        }
+    }
+
+    public class DownloadPack
+    {
+        private readonly static List<DownloadPack> dlPack = new List<DownloadPack>();
+
+        public static long TotalPackSize
+        {
+            get
+            {
+                return dlPack.Select(x => x.TotalBytes).Sum();
+            }
+        }
+
+        public long TotalBytes;
+        public IEnumerable<DownloadPath> col;
+
+        private DownloadPack()
+        {
+        }
+
+        public DownloadPack(string Url, string Path)
+        {
+            //Download a unique file
+            TotalBytes = (long) WebExtensions.GetFileLength(Url);
+            col = new DownloadPath[] { new DownloadPath(new Uri(Url), Path) };
+        }
+
+        public DownloadPack(long tb, IEnumerable<DownloadPath> paths)
+        {
+            TotalBytes = tb;
+            col = paths;
+
+            dlPack.Add(this);
         }
     }
 }

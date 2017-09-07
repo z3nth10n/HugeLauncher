@@ -9,20 +9,17 @@ namespace HugeLauncher
         public static frmTutorial instance;
 
         public frmTutorial()
-            : base(55)
+            : base(new Point(2, 25), new Size(20, 65))
         {
             InitializeComponent();
-            Shown += (sender, e) =>
-            {
-                Size = new Size(mainIns.Width - 20, mainIns.Height - 65);
-            };
-            Program.FixHeight(this);
+            if (frmDescription.instance != null)
+                frmDescription.instance.Hide();
         }
 
         public static void Init(frmMain ins)
         {
-            //Console.WriteLine(new System.Diagnostics.StackTrace().ToString());
-            Init(ins, HugeFormType.frmTutorial);
+            mainIns = ins;
+            Init(new frmTutorial());
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -30,12 +27,12 @@ namespace HugeLauncher
             TopMost = false;
             Hide();
             if (!frmDescription.wasOpened)
-                Init(mainIns, HugeFormType.frmDescription);
+                Init(frmDescription.instance != null ? frmDescription.instance : new frmDescription());
         }
 
         private void frmTutorial_Load(object sender, EventArgs e)
         {
-            webBrowser1.Url = Program.GetHugeFormUri(HugeFormType.frmTutorial);
+            webBrowser1.Navigate(Program.GetHugeFormUri(this));
         }
     }
 }

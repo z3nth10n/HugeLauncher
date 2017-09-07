@@ -136,4 +136,7 @@
   <data name="opcionesToolStripMenuItem.Text" xml:space="preserve">
     <value>Options</value>
   </data>
+  <data name="$this.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
 </root>

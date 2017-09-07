@@ -58,18 +58,18 @@
             // 
             // tabControl1
             // 
-            resources.ApplyResources(this.tabControl1, "tabControl1");
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            resources.ApplyResources(this.tabControl1, "tabControl1");
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             // 
             // tabPage1
             // 
-            resources.ApplyResources(this.tabPage1, "tabPage1");
             this.tabPage1.Controls.Add(this.label5);
             this.tabPage1.Controls.Add(this.btnDelClient);
             this.tabPage1.Controls.Add(this.btnRuninsClient);
+            resources.ApplyResources(this.tabPage1, "tabPage1");
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
@@ -94,10 +94,10 @@
             // 
             // tabPage2
             // 
-            resources.ApplyResources(this.tabPage2, "tabPage2");
             this.tabPage2.Controls.Add(this.label6);
             this.tabPage2.Controls.Add(this.btnDelServer);
             this.tabPage2.Controls.Add(this.btnRunisServer);
+            resources.ApplyResources(this.tabPage2, "tabPage2");
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
@@ -122,8 +122,8 @@
             // 
             // comboBox1
             // 
-            resources.ApplyResources(this.comboBox1, "comboBox1");
             this.comboBox1.FormattingEnabled = true;
+            resources.ApplyResources(this.comboBox1, "comboBox1");
             this.comboBox1.Name = "comboBox1";
             // 
             // label1
@@ -158,35 +158,31 @@
             // 
             // menuStrip1
             // 
-            resources.ApplyResources(this.menuStrip1, "menuStrip1");
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.opcionesToolStripMenuItem});
+            resources.ApplyResources(this.menuStrip1, "menuStrip1");
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
             // 
             // opcionesToolStripMenuItem
             // 
-            resources.ApplyResources(this.opcionesToolStripMenuItem, "opcionesToolStripMenuItem");
             this.opcionesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.establecerRutaDeInstalaciónToolStripMenuItem,
             this.mostrarTutorialInicialToolStripMenuItem});
             this.opcionesToolStripMenuItem.Name = "opcionesToolStripMenuItem";
+            resources.ApplyResources(this.opcionesToolStripMenuItem, "opcionesToolStripMenuItem");
             // 
             // establecerRutaDeInstalaciónToolStripMenuItem
             // 
-            resources.ApplyResources(this.establecerRutaDeInstalaciónToolStripMenuItem, "establecerRutaDeInstalaciónToolStripMenuItem");
             this.establecerRutaDeInstalaciónToolStripMenuItem.Name = "establecerRutaDeInstalaciónToolStripMenuItem";
+            resources.ApplyResources(this.establecerRutaDeInstalaciónToolStripMenuItem, "establecerRutaDeInstalaciónToolStripMenuItem");
             this.establecerRutaDeInstalaciónToolStripMenuItem.Click += new System.EventHandler(this.establecerRutaDeInstalaciónToolStripMenuItem_Click);
             // 
             // mostrarTutorialInicialToolStripMenuItem
             // 
-            resources.ApplyResources(this.mostrarTutorialInicialToolStripMenuItem, "mostrarTutorialInicialToolStripMenuItem");
             this.mostrarTutorialInicialToolStripMenuItem.Name = "mostrarTutorialInicialToolStripMenuItem";
+            resources.ApplyResources(this.mostrarTutorialInicialToolStripMenuItem, "mostrarTutorialInicialToolStripMenuItem");
             this.mostrarTutorialInicialToolStripMenuItem.Click += new System.EventHandler(this.mostrarTutorialInicialToolStripMenuItem_Click);
-            // 
-            // folderBrowserDialog1
-            // 
-            resources.ApplyResources(this.folderBrowserDialog1, "folderBrowserDialog1");
             // 
             // frmMain
             // 
