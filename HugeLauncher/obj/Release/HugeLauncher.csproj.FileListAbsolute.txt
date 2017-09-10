@@ -1,6 +1,7 @@
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\HugeLauncher.exe.config
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\HugeLauncher.exe
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\HugeLauncher.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\en\HugeLauncher.resources.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\HugeAPI.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\LiteLerped-WF-API.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\Lerp2Web.dll
@@ -12,13 +13,12 @@ D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\en\Lite
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\es\LiteLerped-WF-API.resources.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\fr\LiteLerped-WF-API.resources.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.csprojResolveAssemblyReference.cache
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.frmDescription.resources
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.frmMain.resources
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.frmTutorial.resources
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.Properties.Resources.resources
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.frmMain.en.resources
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.csproj.GenerateResource.Cache
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\en\HugeLauncher.resources.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.exe
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.pdb
-D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\en\HugeLauncher.resources.dll
-D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.frmMain.en.resources
-D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\en\HugeLauncher.resources.dll
-D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.frmDescription.resources
