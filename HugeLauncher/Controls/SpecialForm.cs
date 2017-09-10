@@ -35,31 +35,6 @@ namespace HugeLauncher.Controls
             specialInstance = this;
             MarginPosition = mPos;
             MarginSize = siz;
-
-            /*InitializeComponent();
-
-            Point p = mainIns.Location;
-
-            TopMost = true;
-
-            Shown += (sender, e) =>
-            {
-                Location = Position;
-            };
-
-            Activated += (sender, e) =>
-            {
-                if (Visible)
-                    mainIns.Activate();
-            };
-
-            FormClosing += (sender, e) =>
-            {
-                if (Visible)
-                    mainIns.Close();
-            };*/
-
-            //Show();
         }
 
         private void Loading()
@@ -70,9 +45,7 @@ namespace HugeLauncher.Controls
             pnl.Size = new Size(mainIns.Width - MarginSize.Width, mainIns.Height - MarginSize.Height);
             pnl.BackColor = Color.Red;
 
-            //.Select(x => (Control) Activator.CreateInstance(x.GetType()))
             pnl.Controls.AddRange(Controls.Cast<Control>().ToArray());
-            //frmMain.mainInstance.Controls.Add(new WebBrowser());
 
             mainIns.Controls.Add(pnl);
 
@@ -81,14 +54,11 @@ namespace HugeLauncher.Controls
             FixHeight(pnl);
             //Bringer(pnl);
 
-            //pnl.Refresh();
             PanelInstance = pnl;
         }
 
         private void FixHeight(Panel pnl)
         {
-            //Console.WriteLine("Fixing height of: " + pnl.GetType().Name);
-
             Size siz = mainIns.Size - MarginSize;
 
             pnl.Height = siz.Height;

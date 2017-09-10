@@ -359,10 +359,7 @@ namespace HugeLauncher
             else
                 ModifyMCLProperties(LauncherFolderPath);
 
-            /*this.StartDownload(dl.Select(token =>
-            {
-                return new DownloadPath(new Uri(token["FileUrl"].ToObject<string>()), Path.Combine(path, token["FileRelPath"].ToObject<string>()));
-            }), type, verObj["TotalSize"].ToObject<long>());*/
+            phase.Download(1);
         }
 
         private void ModifyMCLProperties(string path)
@@ -419,7 +416,7 @@ namespace HugeLauncher
         }
     }
 
-    public class ModpackData
+    public sealed class ModpackData
     {
         public string Name;
 
@@ -434,7 +431,7 @@ namespace HugeLauncher
         }
     }
 
-    public class DownloadPath
+    public sealed class DownloadPath
     {
         public Uri Url;
         public string Path;
@@ -531,6 +528,7 @@ namespace HugeLauncher
 
         public static void StartDownload(this Form frm, IEnumerable<DownloadPath> downloads, PackType type, long totalBytes)
         {
+            cancellingDownload = false;
             form = frm;
             FileLength = downloads.Count();
             packType = type;
@@ -544,7 +542,7 @@ namespace HugeLauncher
 
         public static void CancelDownload()
         {
-            frmDescription.instance.Show();
+            frmDescription.instance.Show(); //No funca esto o q?
             cancellingDownload = true;
         }
 
@@ -564,7 +562,8 @@ namespace HugeLauncher
                     client.DownloadFileAsync(dl.Url, dl.Path);
                 }
             });
-            thread.Start();
+            if (!cancellingDownload)
+                thread.Start();
         }
 
         private static void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -593,8 +592,8 @@ namespace HugeLauncher
                 {
                     if (cancellingDownload)
                     {
-                        client.DownloadProgressChanged -= null;
-                        client.DownloadFileCompleted -= null;
+                        client.DownloadProgressChanged -= new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
+                        client.DownloadFileCompleted -= new AsyncCompletedEventHandler(client_DownloadFileCompleted);
                         client.Dispose();
                         _downloads = null;
                         return;
@@ -607,7 +606,7 @@ namespace HugeLauncher
 
                     lblFileProgress.Text = string.Format("Downloaded {0} of {1} ({2:F2}%) ", e.BytesReceived.BytesToString(), e.TotalBytesToReceive.BytesToString(), percentage);
                     pbFileProgress.Value = (int) Math.Truncate(percentage);
-                    lblTotalProgress.Text = string.Format("Fase {0}: {1} de {2} archivos descargados ({3:F2}%)\nArchivo: {4} (Total: {5:F2}%)", "1", CurFilesCount, FileLength, phasePercentage, GetFileStr(fileName), totalPercentage);
+                    lblTotalProgress.Text = string.Format("Fase {0}: {1} de {2} archivos descargados ({3:F2}%)\nArchivo: {4} (Total: {5:F2}%)", PhaseManager.PackIndex, CurFilesCount, FileLength, phasePercentage, fileName.GetFileStr(), totalPercentage);
                     pbTotalProgress.Value = (int) Math.Truncate(totalPercentage);
 
                     CurByteValue = e.BytesReceived;
@@ -624,7 +623,7 @@ namespace HugeLauncher
             form.BeginInvoke((MethodInvoker) delegate
             {
                 DownloadPath dl = _downloads.Count > 0 ? _downloads.Dequeue() : null;
-                if (dl != null) NextDownload(dl);
+                if (dl != null && !cancellingDownload) NextDownload(dl);
                 else
                 {
                     //Check if files are complete??
@@ -638,27 +637,21 @@ namespace HugeLauncher
                 DownloadCompleted(dl == null);
             });
         }
-
-        private static string GetFileStr(string name)
-        {
-            string withoutExt = Path.GetFileNameWithoutExtension(name);
-            return withoutExt.Length > 12 ? withoutExt.Substring(0, 12) + "..." + name.Replace(withoutExt, "") : name;
-        }
     }
 
-    public class PhaseManager
+    public sealed class PhaseManager
     {
         public delegate void CustomEventHandler(int index);
 
         public static event CustomEventHandler PhaseCompleted;
 
         private static DownloadPack curPack;
-        private static int packIndex;
 
+        internal static int PackIndex;
         internal static PhaseManager instance;
         internal static Action<DownloadPack> NextDownload;
 
-        public Queue<DownloadPack> multiPaths;
+        public Queue<DownloadPack> Packs = new Queue<DownloadPack>();
         private readonly PackType _Type;
 
         private PhaseManager()
@@ -671,7 +664,7 @@ namespace HugeLauncher
             _Type = t;
 
             foreach (DownloadPack dl in dls)
-                multiPaths.Enqueue(dl);
+                Packs.Enqueue(dl);
 
             NextDownload = (dl) =>
             {
@@ -692,38 +685,40 @@ namespace HugeLauncher
 
         public void AddDownload(DownloadPack dl)
         {
-            multiPaths.Enqueue(dl);
+            Packs.Enqueue(dl);
         }
 
-        public void Download()
+        public void Download(int startIndex = 0)
         {
+            Console.WriteLine(Packs.Count);
+            if (startIndex > 0) Packs.SetFirstTo(startIndex);
             NextDownload?.Invoke(Dequeue());
         }
 
         public DownloadPack Dequeue()
         {
-            PhaseCompleted(packIndex);
-            ++packIndex;
-            curPack = multiPaths.Dequeue();
+            PhaseCompleted(PackIndex);
+            ++PackIndex;
+            curPack = Packs.Dequeue();
             return curPack;
         }
 
         public static double GetSummedValue()
         {
             double ret = 0;
-            for (int i = packIndex; i > 0; --i)
+            for (int i = PackIndex; i > 0; --i)
                 ret += GetPhaseValue(i);
             return ret;
         }
 
         internal static double GetPhaseValue(int ind = -1)
         {
-            DownloadPack dl = ind == -1 ? instance.multiPaths.ElementAt(ind) : curPack;
+            DownloadPack dl = ind == -1 ? instance.Packs.ElementAt(ind) : curPack;
             return (double) dl.TotalBytes / DownloadPack.TotalPackSize;
         }
     }
 
-    public class DownloadPack
+    public sealed class DownloadPack
     {
         private readonly static List<DownloadPack> dlPack = new List<DownloadPack>();
 
