@@ -3,23 +3,17 @@ using HugeLauncher.Properties;
 using Lerp2Web;
 using LiteLerped_WF_API.Classes;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using static System.Windows.Forms.Control;
 using LiteProgram = LiteLerped_WF_API.Program;
 
 namespace HugeLauncher
 {
-    /*public enum HugeFormType
-    {
-        frmDescription,
-        frmTutorial
-    }*/
-
     internal static class Program
     {
         public static string WebUrl
@@ -76,6 +70,15 @@ namespace HugeLauncher
         public static bool IsDirectoryEmpty(this string path)
         {
             return !Directory.EnumerateFileSystemEntries(path).Any();
+        }
+
+        public static void AddRange(this Control con, IEnumerable<Control> col)
+        {
+            IEnumerable<Control> cc = new List<Control>(col);
+            con.Controls.AddRange(cc.ToArray());
+
+            foreach (Control c in cc) //Me cago en su puta madre
+                AttachedControl.controls[c.Name][EventType.Loaded](c, null);
         }
     }
 

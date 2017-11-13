@@ -1,5 +1,4 @@
 ﻿using HugeLauncher.Controls;
-using System;
 using System.Drawing;
 
 namespace HugeLauncher
@@ -18,13 +17,15 @@ namespace HugeLauncher
         public static void Init(frmMain ins)
         {
             mainIns = ins;
-            Init(new frmDescription());
-        }
-
-        private void frmDescription_Load(object sender, EventArgs e)
-        {
-            wasOpened = true;
-            webBrowser1.Navigate(Program.GetHugeFormUri(this));
+            Init(new frmDescription(), () =>
+            {
+                AttachedControl con = new AttachedControl(instance.webBrowser1);
+                con[EventType.Loaded] = (sender, e) =>
+                {
+                    wasOpened = true;
+                    instance.webBrowser1.Navigate(Program.GetHugeFormUri(instance));
+                };
+            });
         }
     }
 }

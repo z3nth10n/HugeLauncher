@@ -199,57 +199,7 @@ namespace HugeLauncher
         {
             Console.WriteLine("frmMain_Load");
 
-            //foreach (var header in client.ResponseHeaders)
-            //    Console.WriteLine(header.ToString());
-
-            //Int64 bytes_total = Convert.ToInt64(client.ResponseHeaders["Content-Length"]);
-            //MessageBox.Show(bytes_total.ToString() + " Bytes");
-
-            /*mainInstance.LocationChanged += (sender1, e1) =>
-            {
-                //Point p = frmTutorial.instance.Location;
-                if (frmTutorial.instance != null && frmTutorial.instance.Visible) frmTutorial.instance.Location = frmTutorial.instance.Position;
-                if (frmDescription.instance != null && frmDescription.instance.Visible) frmDescription.instance.Location = frmDescription.instance.Position;
-            };*/
-
-            /*mainInstance.ActiveChanged += (sender1, state) =>
-            {
-                frmTutorial tut = frmTutorial.instance;
-                frmDescription desc = frmDescription.instance;
-
-                if (tut != null)
-                {
-                    tut.TopMost = state.IsActive;
-                    tut.Visible = state.IsActive;
-                }
-
-                if (desc != null)
-                {
-                    desc.TopMost = state.IsActive;
-                    desc.Visible = state.IsActive;
-                }
-            };*/
-
-            /*instance.Deactivate += (s, ee) =>
-            {
-                Console.WriteLine("aaaa");
-            }; //(EventHandler) handler.Clone();
-
-            instance.Activated += (s, ee) =>
-            {
-                Console.WriteLine("bbb");
-            };*/ //handler; // (EventHandler) handler.Clone();
-
-            /*Timer timer = new Timer();
-            timer.Interval = 1000;
-            timer.Tick += (sender1, e1) =>
-            {
-                Console.WriteLine("Visible: "+instance.ChildReallyVisible(instance.Controls.Find("comboBox1", true)[0]));
-            };
-            timer.Start();*/
-
             //Check the first execution
-
             if (WebAPI.InitializatedConfigSession)
                 frmTutorial.Init(mainInstance);
             else

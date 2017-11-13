@@ -44,7 +44,6 @@
             this.Controls.Add(this.webBrowser1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmDescription";
-            this.Load += new System.EventHandler(this.frmDescription_Load);
             this.ResumeLayout(false);
 
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -16,7 +17,7 @@ namespace HugeLauncher.Controls
 
         internal static SpecialForm specialInstance;
 
-        protected static void Init<T>(T val) where T : SpecialForm
+        protected static void Init<T>(T val, Action act = null) where T : SpecialForm
         {
             if (typeof(T).Name == "frmDescription")
                 frmDescription.instance = (frmDescription) (object) val;
@@ -24,6 +25,8 @@ namespace HugeLauncher.Controls
                 frmTutorial.instance = (frmTutorial) (object) val;
 
             specialInstance.Loading();
+
+            act?.Invoke();
         }
 
         public SpecialForm()
@@ -45,7 +48,7 @@ namespace HugeLauncher.Controls
             pnl.Size = new Size(mainIns.Width - MarginSize.Width, mainIns.Height - MarginSize.Height);
             pnl.BackColor = Color.Red;
 
-            pnl.Controls.AddRange(Controls.Cast<Control>().ToArray());
+            pnl.AddRange(Controls.Cast<Control>());
 
             mainIns.Controls.Add(pnl);
 
@@ -94,6 +97,44 @@ namespace HugeLauncher.Controls
         public new void Hide()
         {
             PanelInstance.Visible = false;
+        }
+    }
+
+    public enum EventType
+    {
+        Loaded
+    }
+
+    public class AttachedControl
+    {
+        internal readonly static Dictionary<string, AttachedControl> controls = new Dictionary<string, AttachedControl>();
+
+        private readonly Dictionary<EventType, Action<object, EventArgs>> attachedActions = new Dictionary<EventType, Action<object, EventArgs>>();
+
+        public Action<object, EventArgs> this[EventType ev]
+        {
+            get
+            {
+                if (!attachedActions.ContainsKey(ev))
+                    attachedActions.Add(ev, null);
+                return attachedActions[ev];
+            }
+            set
+            {
+                if (attachedActions.ContainsKey(ev))
+                    attachedActions[ev] = value;
+                else
+                    attachedActions.Add(ev, value);
+            }
+        }
+
+        private AttachedControl()
+        {
+        }
+
+        public AttachedControl(Control c)
+        {
+            controls.Add(c.Name, this);
         }
     }
 }
