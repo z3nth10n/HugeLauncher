@@ -32,8 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lerp2Web">
-      <HintPath>..\..\Lerp2Web\Lerp2Web\bin\Release\Lerp2Web.dll</HintPath>
+    <Reference Include="LiteLerped-WF-API">
+      <HintPath>..\..\LiteLerped-WF-API\LiteLerped-WF-API\bin\Release\LiteLerped-WF-API.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

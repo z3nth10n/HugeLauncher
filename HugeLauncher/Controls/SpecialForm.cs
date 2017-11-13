@@ -24,9 +24,9 @@ namespace HugeLauncher.Controls
             else
                 frmTutorial.instance = (frmTutorial) (object) val;
 
-            specialInstance.Loading();
-
             act?.Invoke();
+
+            specialInstance.Loading();
         }
 
         public SpecialForm()

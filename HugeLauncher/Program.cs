@@ -77,7 +77,7 @@ namespace HugeLauncher
             IEnumerable<Control> cc = new List<Control>(col);
             con.Controls.AddRange(cc.ToArray());
 
-            foreach (Control c in cc) //Me cago en su puta madre
+            foreach (Control c in cc)
                 AttachedControl.controls[c.Name][EventType.Loaded](c, null);
         }
     }

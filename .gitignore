@@ -1,5 +1,4 @@
 *.json
-/packages/
 /.vs/
 /HugeLauncher/bin/Modpacks/
 /HugeLauncher/bin/Launcher/
