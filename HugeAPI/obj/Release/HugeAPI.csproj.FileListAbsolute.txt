@@ -8,3 +8,4 @@ D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\bin\Release\es\LiteLerpe
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\bin\Release\fr\LiteLerped-WF-API.resources.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\obj\Release\HugeAPI.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\obj\Release\HugeAPI.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeAPI\obj\Release\HugeAPI.csprojResolveAssemblyReference.cache

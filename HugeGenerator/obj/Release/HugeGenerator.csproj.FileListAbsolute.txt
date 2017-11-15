@@ -13,3 +13,9 @@ D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\Lerp2W
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\obj\Release\HugeGenerator.csprojResolveAssemblyReference.cache
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\obj\Release\HugeGenerator.exe
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\obj\Release\HugeGenerator.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\LiteLerped-WF-API.dll
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\LiteLerped-WF-API.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\de\LiteLerped-WF-API.resources.dll
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\en\LiteLerped-WF-API.resources.dll
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\es\LiteLerped-WF-API.resources.dll
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeGenerator\bin\Release\fr\LiteLerped-WF-API.resources.dll

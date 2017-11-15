@@ -1,8 +1,6 @@
 ﻿using Lerp2Web;
 using Newtonsoft.Json;
-using System;
 using System.IO;
-using System.Net;
 
 namespace HugeAPI
 {

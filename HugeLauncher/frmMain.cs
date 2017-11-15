@@ -325,6 +325,11 @@ namespace HugeLauncher
             //frmDescription.instance.Hide();
         }
 
+        private void frmMain_Shown(object sender, EventArgs e)
+        {
+            mainInstance.LoadCallback();
+        }
+
         public static bool IsVersionSetup(int index, PackType type)
         {
             string folder = GetFolderPathVer(index, type);

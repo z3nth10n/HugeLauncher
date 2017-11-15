@@ -9,7 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using static System.Windows.Forms.Control;
+
+//using static System.Windows.Forms.Control;
 using LiteProgram = LiteLerped_WF_API.Program;
 
 namespace HugeLauncher
@@ -78,7 +79,10 @@ namespace HugeLauncher
             con.Controls.AddRange(cc.ToArray());
 
             foreach (Control c in cc)
-                AttachedControl.controls[c.Name][EventType.Loaded](c, null);
+                if (AttachedControl.controls.ContainsKey(c.Name))
+                    AttachedControl.controls[c.Name][EventType.Loaded](c, null);
+                else
+                    Console.WriteLine("'{0}' key was not found on AttachedControls!", c.Name);
         }
     }
 

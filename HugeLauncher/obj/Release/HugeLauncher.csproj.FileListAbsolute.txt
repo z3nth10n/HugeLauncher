@@ -4,15 +4,12 @@ D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\HugeLau
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\en\HugeLauncher.resources.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\HugeAPI.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\LiteLerped-WF-API.dll
-D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\Lerp2Web.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\HugeAPI.pdb
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\LiteLerped-WF-API.pdb
-D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\Lerp2Web.pdb
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\de\LiteLerped-WF-API.resources.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\en\LiteLerped-WF-API.resources.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\es\LiteLerped-WF-API.resources.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\bin\Release\fr\LiteLerped-WF-API.resources.dll
-D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.csprojResolveAssemblyReference.cache
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.frmDescription.resources
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.frmMain.resources
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.frmTutorial.resources
@@ -22,3 +19,4 @@ D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLau
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\en\HugeLauncher.resources.dll
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.exe
 D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.pdb
+D:\LERP2DEV\Lerp2Dev Visual Studio\HugeLauncher\HugeLauncher\obj\Release\HugeLauncher.csprojResolveAssemblyReference.cache

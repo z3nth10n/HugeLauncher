@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiteLerped_WF_API.Controls;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Windows.Forms;
 
 namespace HugeLauncher.Controls
 {
-    public partial class SpecialForm : Form
+    public partial class SpecialForm : LerpedForm
     {
         protected static frmMain mainIns;
 
@@ -46,7 +47,7 @@ namespace HugeLauncher.Controls
 
             pnl.Location = MarginPosition;
             pnl.Size = new Size(mainIns.Width - MarginSize.Width, mainIns.Height - MarginSize.Height);
-            pnl.BackColor = Color.Red;
+            //pnl.BackColor = Color.Red;
 
             pnl.AddRange(Controls.Cast<Control>());
 
