@@ -327,7 +327,7 @@ namespace HugeLauncher
 
         private void frmMain_Shown(object sender, EventArgs e)
         {
-            mainInstance.LoadCallback();
+            //mainInstance.LoadCallback();
         }
 
         public static bool IsVersionSetup(int index, PackType type)
